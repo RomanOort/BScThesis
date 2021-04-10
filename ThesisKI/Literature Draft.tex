@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{textcomp}
+\usepackage{eurosym}
+\title{Literature Draft}
+\author{Roman Oort}
+\date{\today}
+\DeclareMathOperator*{\plim}{plim}
+\begin{document}
+
+\maketitle
+\subsection*{Naive Learning and the Wisdom of Crowds \cite{golub2010naive}}
+In the paper the process of social learning using the DeGroot model is described, and whether groups, over sufficiently long periods of time, are able to converge to a given truth, through social learning. \newline
+In this model the beliefs of the agents at time $t$ can be computed with \newline
+$\textbf{p}^{(t)} = \textbf{T}^{(t)}\textbf{p}^{(0)}$, where $\textbf{T}$ is a non-negative, stochastic adjacency matrix describing the network. \newline
+Subsequently to conditions whether a given network converges are determined. This is then used to determine whether a given sequence of networks is wise, where a sequence of networks is said to be wise if the difference between the truth and an agent's belief does not exceed 0, for any agent. Which is shown to occur when the ratio of the most influential agent in the network and the total influence in the network tends to 0 as $n \to \infty$. \newline
+Following this a necessary condition, and a sufficient condition for wisdom in a sequence are defined.
+For a sequence of networks to be conditional it is necessary that there are no uniformly prominent families in the network, and satisfying balance between minimal out-dispersion is sufficient to ensure a sequence is considered wise.\newline
+Finally it is shown that the speed at which a network converges is related to the second-largest eigenvalue of the network.
+
+\subsection*{Networks, Crowds and Markets \cite{easley2010networks}}
+This is another book regarding networks and their various applications. Here chapter 16 (\textit{Information Cascades}) is the most relevant chapter, as this deals with the spread of information through a network, and the adaptation of a consensus by the agents of that network. This method, however, not based on the DeGroot method, rather, it discusses the dynamics of information cascades in situations with sequential decision making. This is different from the DeGroot model where all agents update their beliefs simultaneously. It emphasizes how information cascades are a form imitation, though not mindless, but rather based on logical inferences. It shows how information cascades do not necessarily lead to an optimal outcome. Furthermore, these information cascades are often fragile and a very small amount of new information can derail it.
+\newpage
+\subsection*{Social and Economic Networks \cite{jackson2010social}}
+The purpose of this book is to describe networks for social and economic purposes. For this thesis project the chapter 8 (\textit{Learning and Networks}) is the most relevant, as it discusses the role of social networks in sharing information and opinions. Several fundamental questions of how social networks influence are discussed.
+Furthermore a variation of the DeGroot model is discussed with external sources of information, which are modeled as entries in \textbf{T} for which $\textbf{T}_{ii}=1$ and $\textbf{T}_{ij}=0$ for all $j\neq i$ but $\textbf{T}_{ji}=0$ for some $j$. \newline
+The chapter also states additional definitions consensus of in a DeGroot model not mentioned in \cite{golub2010naive}. It states that consensus is only reached in a DeGroot model if and only if there is exactly one strongly connected closed groups of agents and \textbf{T} is aperiodic on that group. Which leads to an equivalent definition of consensus, stating that consensus is reached if and only if there exists some $t$ s.t. $\textbf{T}^{t}$ has a column with only positive entries. \newline
+Then it is shown that a consensus can also be reached when \textbf{T} is not stationary, but changes over time or depending on the beliefs of the agents. However, it is also shown that a consensus may never be reached if the updating rule always assumes a certain weight on the initial belief.
+
+\subsection*{Robust Naive Learning in Social Networks \cite{amir2021robust}}
+\cite{amir2021robust} study a DeGroot model in opinion exchange where every agent receives a noisy signal of a given true state of the world. As shown by \cite{golub2010naive} these networks, when the population becomes sufficiently large, will form a consensus which nears this true state of the world. However, this convergence can be quickly derailed and swayed from this true value by non-cooperative agents, agents that do not follow the updating rule, or refuse to change their beliefs.
+To make the standard DeGroot more robust to such non-cooperative agents they propose a variation on this model called $\varepsilon$-DeGroot, which approximates DeGroot dynamics but is resilient to non-cooperative agents in the network.
+This model uses an additional parameter $\varepsilon$ in updating the belief of an agent. If the difference between the current belief, $x$ of the agent, and the (weighted) average belief of its neighbours is smaller than this $\varepsilon$ the agent does not update its belief, however if the difference between the two is greater it chooses the new belief that is closest to $x$ from $\{y-\varepsilon, y+\varepsilon\}$. This approach stills allows for approximate learning, while being highly robust to small deviations.
+\newpage
+\subsection*{Learning in Social Networks \cite{golub2017learning}}
+\cite{golub2017learning} discuss several methods for approaching social learning. While sequential social learning models are also discussed the most relevant part for this thesis is the overview of the DeGroot model which uses repeated linear updating. After discussing the basics of the DeGroot model, as discussed by \cite{golub2010naive}, they propose some alternatives to the basic DeGroot model. The first is changing the updating rule to use time-dependent weights. This transforms the updating rule from $\textbf{p}^{(t)} = \textbf{T}^{(t)}\textbf{p}^{(0)}$ to $\textbf{p}^{(t)} = \textbf{T}(t)\textbf{p}^{(t-1)}$. Another allows each agent $i$ to maintain a, constant, private belief, $y_i$ on which they always place some weight, giving the following update rule: $p_i^{(t)} = (1-\alpha_i)y_i + \alpha_i\sum_{j}\textbf{T}_{ij}p_j^{(t-1)}$. \newline
+Furthermore they discuss how the structure of a network can determine to what degree a network will deviate from the consensus by looking at segregation using the bottleneck ratio, which becomes small when there is a group that pays little attention to the overall network outside of this group, limiting the spread of information through the network. \newline
+Finally they discuss the extension of the DeGroot model to account for changing weights, called the \textit{stochastic DeGroot} model which still satisfies the conditions necessary to converge to a consensus.
+
+
+\bibliographystyle{apalike}
+\bibliography{references.bib}
+
+\end{document}
