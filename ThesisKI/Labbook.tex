@@ -81,11 +81,14 @@ Furthermore, documentation and comments were added to the function.
 
 Comparable QoL features, like the save path, whether the plot should be saved, and whether the plot should be showed, were added to the function for generating the degree distribution plots. \newline
 Furthermore the option was added to determine which generation style should be used for the network. The generation type does not have an incredibly significant impact on the degree distribution but the option was added for the sake of completion. \newline
-When the parameter instant is set to true it will generate a plot with only networks that were generated using the, faster, instant generation method. \newline
-When the incremental parameter is set to true it will generate a plot of the degree distribution of an incrementally generated network. \newline
+When the parameter instant is set to true it will generate a plot with only networks that were generated using the, faster, instant generation method, see figure \ref{degree:instant}. \newline
+When the incremental parameter is set to true it will generate a plot of the degree distribution of an incrementally generated network, see figure \ref{degree:incremental}. \newline
 When both are set to true it will generate a plot comparing them both, see figure \ref{degree:increase}.
+
 \subsubsection{Degree Per Agent}
 Furthermore a function was added that generates a barplot of the degree of each agent. This shows how the degree of the agents as the network grows, providing insight in the, desirable, bias towards the earlier agents in the network. Using an additional parameter allows switching between instant and incremental generation. Furthermore, one can choose to use only the increased or decreased generation, or compare the two.
+
+To ensure the generated plots were not limited to small networks while remaining readable the function takes the average degree of every $x$ agents, where $x$ is a parameter that can be set manually. This allows the examination of larger network $(n>30)$ while still retaining a readable resolution on the graph.
 \newpage
 \section{Remaining Figures}
 \subsection{10/4/2021}
