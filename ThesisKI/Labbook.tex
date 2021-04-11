@@ -73,6 +73,7 @@ Additionally a method to increase the degree distribution in the network has bee
 
 \newpage
 \subsection{11/4/2021}
+\subsubsection{Old Functions}
 The functions to generate the plots for the timing of the network generation and the degree distribution were moved to separate functions. This way one can be used without the results of the other.
 
 Some quality of life features were added to the generation time plotting function. Optional parameters are included to determine whether the plot should be saved, to which path the plot should be saved, how many iterations should be used to average the time of the generation, and finally a parameter to determine the step size when generating the networks, which can be used to in- or decrease the resolution of the plot.\newline
@@ -83,11 +84,81 @@ Furthermore the option was added to determine which generation style should be u
 When the parameter instant is set to true it will generate a plot with only networks that were generated using the, faster, instant generation method. \newline
 When the incremental parameter is set to true it will generate a plot of the degree distribution of an incrementally generated network. \newline
 When both are set to true it will generate a plot comparing them both, see figure \ref{degree:increase}.
-
-Furthermore a function was added that generates a barplot of the degree of each agent. This shows how the degree of the agents as the network grows, providing insight in the, wanted, bias towards the earlier agents in the network. This function uses only the instant generation method, as the generation method does not greatly impact the degree distribution of the network.,
-
+\subsubsection{Degree Per Agent}
+Furthermore a function was added that generates a barplot of the degree of each agent. This shows how the degree of the agents as the network grows, providing insight in the, desirable, bias towards the earlier agents in the network. Using an additional parameter allows switching between instant and incremental generation. Furthermore, one can choose to use only the increased or decreased generation, or compare the two.
+\newpage
 \section{Remaining Figures}
 \subsection{10/4/2021}
 \subsubsection{Degree distribution, per generation type}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/InstantDegree.png}
+        \caption{Degree Distribution, Instant}
+        \label{degree:instant}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/IncrementalDegree.png}
+        \caption{Degree Distribution, Incremental}
+        \label{degree:incremental}
+    \end{figure}
+\end{center}
 
+\subsection*{11/4/2021}
+\subsubsection{Degree Per Agent, Instant}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/IncreasedPerAgentInstant.png}
+        \caption{Average Degree Count, Instant, Increased}
+        \label{DPA:InsInc}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/StandardPerAgentInstant.png}
+        \caption{Average Degree Count, Instant, Standard}
+        \label{DPA:InsStd}
+    \end{figure}
+\end{center}
+\newpage
+\subsubsection{Degree Per Agent, Incremental}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/IncreasedPerAgentIncremental.png}
+        \caption{Average Degree Count, Incremental, Increased}
+        \label{DPA:IncInc}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/StandardPerAgentIncremental.png}
+        \caption{Average Degree Count, Incremental, Standard}
+        \label{DPA:IncStd}
+    \end{figure}
+\end{center}
+\newpage
+\subsubsection{Degree Per Agent, Comparison}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/ComparisonPerAgentInstant.png}
+        \caption{Average Degree Count, Instant, Comparison}
+        \label{DPA:InsCom}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/ComparisonPerAgentIncremental.png}
+        \caption{Average Degree Count, Incremental, Comparison}
+        \label{DPA:IncCom}
+    \end{figure}
+\end{center}
 \end{document}
