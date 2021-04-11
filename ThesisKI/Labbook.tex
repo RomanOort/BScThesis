@@ -17,7 +17,13 @@
 \begin{document}
 
 \maketitle
+
 \newpage
+
+\tableofcontents
+
+\newpage
+
 \section{First Week}
 \subsection{8/4/2021}
 Started implementing network generation. Generated networks need to be aperiodic, stochastic and positive.
@@ -39,7 +45,7 @@ To ensure the network is aperiodic the first agent in the network is guaranteed 
 
 \newpage
 
-\subsection*{10/4/2021}
+\subsection{10/4/2021}
 A function was implemented to generate the truth value of the world, and the signals sent to the agents.
 The truth of the world, $mu$, is drawn from a uniform distribution over the interval $[0, 1]$. At $t=0$ each agent receives a noisy signal, $\mu + \epsilon_i$, of this true world state, where $\epsilon_i$ is a zero-mean normally distributed variable, with $\sigma^2 = \mu^2$. As each agent gets added to the network it also adds a new noisy signal to the belief vector $\textbf{p}$.
 
@@ -49,7 +55,7 @@ This managed to decrease the generation time from, seemingly, polynomial to line
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=1\textwidth]{GenTime2.png}
+        \includegraphics[width=1\textwidth]{ThesisKI/Images/GenTime2.png}
         \caption{Network Generation Time, Mean over 10 Iterations}
         \label{time:2}
     \end{figure}
@@ -59,7 +65,7 @@ Additionally a method to increase the degree distribution in the network has bee
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=1\textwidth]{ThesisKI/IncrementalVSInstantDegree.png}
+        \includegraphics[width=1\textwidth]{ThesisKI/Images/IncrementalVSInstantDegree.png}
         \caption{Degree Distribution Comparison}
         \label{degree:increase}
     \end{figure}
