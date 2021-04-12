@@ -90,6 +90,16 @@ Furthermore a function was added that generates a barplot of the degree of each 
 
 To ensure the generated plots were not limited to small networks while remaining readable the function takes the average degree of every $x$ agents, where $x$ is a parameter that can be set manually. This allows the examination of larger network $(n>30)$ while still retaining a readable resolution on the graph.
 \newpage
+\subsection{12/4/2021}
+The in- and out- degree were switched to ensure they represented the correct measure, which they accidentally did not do earlier.
+
+The instant network generation has been updated to handle the ability of growing an existing network. This is done by applying the method previously used to grow the networks incrementally over a larger amount of agents. This allows the network to be grown in steps of own choosing, i.e. by steps of 10, 100, 1000, etc. This update made the incremental growing method redundant as this functions workings can be replicated using the instant generation method with a step size of 1.
+
+To reflect the new-found redundancy of the incremental network generation all functions were updated to no longer use this function. As no advanced functionalities were implemented as of yet this only concerns the functions used to generate the plots.
+
+Furthermore some testing was done with different probability distributions to explore which different probability distributions can be used to generate the additional degrees of the agents.
+
+\newpage
 \section{Remaining Figures}
 \subsection{10/4/2021}
 \subsubsection{Degree distribution, per generation type}
