@@ -20,46 +20,47 @@
 \newpage
 
 \section{Literature Review}
+
 \subsection{Social Learning}
 Social learning is a field of study used in various different disciplines, ranging from economy to psychology, concerning the process of changing beliefs in groups \cite{reed2010sociallearning}. Research in this field is dedicated to determining how individuals, and groups as a whole, change their beliefs and actions based on beliefs and actions of those around them. Many models have been proposed to formalize this process \cite{golub2017learning}, with the DeGroot model being one of the most prominent \cite{degroot1974concensus}.
 
 \subsection{DeGroot Model}
 \subsubsection{Agent Interaction}
-A DeGroot model consists of a finite set of $N=\{1, 2, ..., n\}$ of agents all interacting with eachother and passing information around. The $n \times n$ \emph{interaction} matrix \textbf{T} describes the nature of these interactions: whose opinions are heeded by whom, and how much so, among others. If the entry $\textbf{T}_{ij} > 0$ it indicates that agent $i$ listens to agent $j$, and the value of this entry determines how much weight agent $i$ places on agents $j$'s opinion: the higher this value the more important $j$'s opinion is to $i$. It is important to note that \textbf{T} is a positive matrix, meaning it is not possible for an agent to place a negative weight on another agents opinion, they are only ever capable of ignoring other agents, or agreeing with in them some manner. 
+A DeGroot model consists of a finite set of $N=\{1, 2, ..., n\}$ of agents all interacting with each other and passing information. The $n \times n$ \emph{interaction} matrix \textbf{T} describes the nature of these interactions: whose opinions are heeded by whom, and how much so, among others. If the entry $\textbf{T}_{ij} > 0$ it indicates that agent $i$ listens to agent $j$, and the value of this entry determines how much weight agent $i$ places on agents $j$'s opinion: the higher this value the more important $j$'s opinion is to $i$. It is important to note that \textbf{T} is a positive matrix, meaning it is not possible for an agent to place a negative weight on another agents opinion, they are only ever capable of ignoring other agents, or agreeing with them in some manner. 
 
 Furthermore, the weight matrix \textbf{T} is a row-stochastic matrix, meaning that its rows sum to one:
 \begin{align*}
     \sum_{j=1}^{n} \textbf{T}_{ij} = 1
 \end{align*}
 
-Another important property of this interaction matrix \textbf{T} is that it is not necessarily symmetrical, making it entirely possible for an agent $i$ to hold the opinion of agent $j$ in high regard, while $j$ thinks very little of $i$'s opinion, or even does not place any weight on agent $i$'s opinion at all.
+Another important property of this interaction matrix \textbf{T} is that it is not necessarily symmetrical, making it entirely possible for an agent $i$ to hold the opinion of agent $j$ in high regard, while $j$ thinks very little of $i$'s opinion, or not even anything  at all.
 
 \newpage
 
 \subsubsection{Belief \& Learning}
-As mentioned before, the DeGroot model is a model used to simulate social learning, and is often referred to as \textit{naive social learning}. This means that this model simulates the development the beliefs of the agents present in the network, as time progresses.
+As mentioned before, the DeGroot model is a model used to simulate social learning, and is often referred to as a form of \textit{naive social learning}. This means that this model simulates the development the beliefs of the agents present in the network, as time progresses, but the updating rule at each time-step is a very simple rule and is therefore called naive.
 
 The belief of an agent $i \in N$ at a time $t \in \{0, 1, 2, ...\}$ is denoted as $p_{i}^{(t)}$, where this belief is generally taken as a real number on the interval $[0, 1]$. At the start of the process, $t=0$, each agent $i$ is given a personal belief, through a private signal,
 \begin{align*}
-    p_{i}^{(t)} = \mu + e_i
+    p_{i}^{(0)} = \mu + e_i
 \end{align*}
 where $\mu$ is a real number, again on the interval $[0, 1]$, assumed to be the true state of the network, and $e_i$ is the random, zero mean, noise of agent $i$'s signal. \newline
-The beliefs of all agents in the network, at time $t$, are aggregated into the belief vector $\textbf{p}^{(t)}$, the $i$th entry corresponds to the belief of agent $i$, at time $t$.
+The beliefs of all agents in the network, are aggregated into the belief vector $\textbf{p}^{(t)}$, where the $i$th entry corresponds to the belief of agent $i$, at time $t$.
 
 As time progresses the agents in the network update their own belief based on the beliefs of the agents around them, using the following updating rule:
 \begin{equation}
-    \textbf{p}^{(t)} &= \textbf{T}\textbf{p}^{(t-1)} \label{updating:standard}
+    \textbf{p}^{(t)} = \textbf{T}\textbf{p}^{(t-1)} \label{updating:standard}
 \end{equation}
-which means that an agent $i$'s opinion is simply the matrix multiplication of the interaction matrix and the belief vector at time $t$. This makes the update rule for an agent $i$ in the network the follows:
+which means that an agent $i$'s opinion, at time $t$, is simply the matrix multiplication of the interaction matrix and the belief vector at time $t-1$. This makes the update rule for an agent $i$ in the network the follows:
 \begin{align*}
     p_{i}^{(t)} = \sum_{j=1}^{n}T_{ij}p_{j}^{(t-1)}
 \end{align*}
-which simply amounts to the weighted sum of the beliefs of all neighbours of agent $i$ in the network, where an agent $i$'s neighbours are those agents $j$ in the network, to which $i$ listens.
+which simply amounts to the weighted sum of the beliefs of all neighbours of agent $i$ in the network, where agent $i$'s neighbours are those agents $j$ in the network to whom $i$ listens.
 
 Furthermore, it is possible to compute the belief vector $\textbf{p}^{(t)}$, without computing the belief vector at every preceding $t^\prime < t$, the formula for which can be derived from equation \ref{updating:standard}, as follows:
 \begin{align*}
     \textbf{p}^{(t)} &= \textbf{T}\textbf{p}^{(t-1)} \\
-    &= \textbf{T}(\textbf{T}\textbf{p}^{(t-2)}) \text{, which, eventually becomes}\\
+    &= \textbf{T}(\textbf{T}\textbf{p}^{(t-2)}) \text{, which, eventually, becomes}\\
     &= \textbf{T}^{t}\textbf{p}^{(0)}
 \end{align*}
 
@@ -78,12 +79,18 @@ The following statements, provided that \textbf{T} is strongly connected, that i
 \begin{itemize}
     \item[-] \textbf{T} is convergent
     \item[-] \textbf{T} is aperiodic
-    \item[-] There is some unique left eigenvector,, \textbf{s}, of \textbf{T}, corresponding to the eigenvalue $\lambda=1$, such that, for every \textbf{p}$\in [0,1]^n$,
+    \item[-] There is some unique left eigenvector, \textbf{s}, of \textbf{T}, corresponding to the eigenvalue $\lambda=1$, such that, for every \textbf{p}$\in [0,1]^n$,
     \begin{align*}
         (\lim_{t\to\infty}\textbf{T}^t\textbf{p}) = \textbf{sp}
     \end{align*}
 \end{itemize}
+
+\newpage
+
+
 \bibliographystyle{apalike}
 \bibliography{references.bib}
-
 \end{document}
+
+
+
