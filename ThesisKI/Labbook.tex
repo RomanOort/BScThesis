@@ -139,6 +139,8 @@ The function for the overlap initialization of the weights was changed to work a
 
 Due to some memory issues when trying to create a $10,000 \times 10,000$ array a cell was added to use Google Colab integration in an attempt to work around this limit. Furthermore the ability to choose the initialization of the weights with the interactive network visualization plot was added, allowing for the swapping of weights on the fly.
 
+Finally the ability to label the links based on their was added, and the option to view the links at a specified time $t$.
+
 \subsection{18/4/2021}
 Look into the first implementations of converging the networks. These functions were created by iteratively multiplying the original weight matrix with itself. After this multiplication the, element-wise, difference between the matrix at time $t-1$ and $t$ would be computed. All of these difference would be summed, and when this sum approaches zero, within a sufficiently small tolerance, the iteration would stop, resulting in both the converged matrix, and the time $t$ at which the matrix achieved convergence. However, these computations would take a very long time as the network size, and time $t$, increased.
 
@@ -176,15 +178,29 @@ In these figures it can be seen that, when generating networks with the standard
 
 \subsection{21/4/2021}
 
-The draw function has been altered to allow the size of the drawn network to go up to a thousand nodes. The previous limitation of a 100 nodes was set in place to prevent the visualization becoming too cluttered. However, to circumvent this issue the size of the plot is now determined dynamically, dependent on the size of the network shown. To grown along with the size of the plot the font-size is also determined dynamically. Below the visualization of networks of 400 and 1000 can be seen, respectively.
+The draw function has been altered to allow the size of the drawn network to go up to a thousand nodes. The previous limitation of a 100 nodes was set in place to prevent the visualization becoming too cluttered. However, to circumvent this issue the size of the plot is now determined dynamically, dependent on the size of the network shown. To grown along with the size of the plot the font-size is also determined dynamically. Below the visualization of networks of 400 and 1000 can be seen, in figure \ref{network_400:increased} and \ref{network_1000:increased} respectively.
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=.8\textwidth]{ThesisKI/Images/.png}
-        \caption{Degree Distribution, Instant}
-        \label{degree:instant}
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/TruthNetwork_400_inc_undir.png}
+        \caption{Undirected Network, Increased Degree}
+        \label{network_400:increased}
     \end{figure}
 \end{center}
+
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/TruthNetwork_1000_inc_undir.png}
+        \caption{Undirected Network, Increased Degree}
+        \label{network_1000:increased}
+    \end{figure}
+\end{center}
+
+\newpage
+
+
+
 \newpage
 
 \section{Remaining Figures}
