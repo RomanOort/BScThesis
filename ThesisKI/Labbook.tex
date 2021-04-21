@@ -199,7 +199,18 @@ The draw function has been altered to allow the size of the drawn network to go 
 
 \newpage
 
+Furthermore a function was added to visualize the progression of the convergence of the current network. First this function plotted the progression of the standard deviation and the mean of the belief vector as time progressed. However, later it was decided that plotting only the standard deviation would give a better impression of the progression of the convergence, as this measure would approach zero as the network converges. However this version of the function allowed the plotting of only a single initialization function at a time, which is rather limiting if the goal is to compare performance of convergence of these initializations. Therefore the function was altered again to be able to compare all the different weight initializations. In figure \ref{convergence:comparison} the result on a directed network, with standard degree, can be seen.
 
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/Convergence_comparison_std_dir.png}
+        \caption{Directed Network, Standard Degree}
+        \label{convergence:comparison}
+    \end{figure}
+\end{center}
+
+This figure was chosen as it highlights the different convergence speeds between the initialization function. However, when a different type of network was chosen the curves became more similar, or differed more. Therefore the another goal is to implement a function that compares the convergence speeds of different network types. However, from a first glance analysis it appears that uniform initialization of the weights leads the network to converge the most rapidly. This makes sense as all other initialization methods serve only to reduce the weights placed on other agents, inhibiting the spread of information through the network.
 
 \newpage
 
