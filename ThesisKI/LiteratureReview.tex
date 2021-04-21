@@ -75,7 +75,9 @@ exists for all $\textbf{p} \in [0, 1]^n$. That is to say, as time progresses suf
 
 Another important property is \emph{aperiodicity}, which concerns the cycles, which are paths through the network that start and end at the same agent. A network is said to be aperiodic if the largest common divisor of the length of all cycles in the network is no more than 1. This condition is automatically satisfied as long as there is at least one agent present in the network who has a link to themselves, as this creates a cycle of length one.
 
-The following statements, provided that \textbf{T} is strongly connected, that is to say, there exists some directed path between any two agents in the network,  are equivalent:
+A final notion important in the convergence of social networks is \emph{connectedness}. When applied to undirected networks, in which a link between two agents works both ways, a network is said to be connected when there exists some path between any two agents $i$ and $j$. However, when applied to \emph{directed} networks this notion changes slightly, and can be divided in two distinct notions, more specifically, a connected directed network can be either \emph{weakly} or \emph{strongly} connected. A directed network is said to weakly connected if there exists some undirected path between any two agents in the network. However, if there also exists a \emph{directed} path between any two agents, a directed network is said to be strongly connected.
+
+Now, assuming that \textbf{T}, is the interaction matrix of a strongly connected network, the following three statements are equivalent:
 \begin{itemize}
     \item[-] \textbf{T} is convergent
     \item[-] \textbf{T} is aperiodic
