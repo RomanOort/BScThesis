@@ -150,8 +150,7 @@ No significant functions were implemented, however, developments were made in th
 
 The integration between google colab and the interactivity widget used in the notebook is spotty, so another solution had to be found for dealing with the memory issues of the local machine. After testing once again the limitation proved to be a temporary one, by my best guess caused by the long time between kernel restarts. This allowed to use my local machine to generate large networks, up to at least $30000 \times 30000$ agents, which however did take a large amount of space, not to mention computation time on these networks grew exceedingly large.
 
-In an  attempt to speed up performance of the matrix operations cupy was installed, which allowed the use of cuda to speed up matrix operations of both the numpy and scipy packages, to use the NVIDIA GeForce 2070 Max-Q of my local system. Furthermore, the use of the sparse matrix representation was investigated to reduce memory usage of the large, mainly empty, networks.
-
+In an  attempt to speed up performance of the matrix operations cupy was installed, which allowed the use of CUDA to speed up matrix operations of both the numpy and scipy packages, to use the NVIDIA GeForce 2070 Max-Q of my local system. Furthermore, the use of the sparse matrix representation was investigated to reduce memory usage of the large, mainly empty, networks.
 
 \begin{table}[H]
     \centering
@@ -164,9 +163,14 @@ In an  attempt to speed up performance of the matrix operations cupy was install
         Time (s) & 113.56 & 133.43 & 2589.00 & - \\
         \bottomrule
     \end{tabular}
-    \label{tabl:exp_time}
+    \label{table:exp_time}
     \caption{Matrix exponentiation times (1000th power)}
 \end{table}
+
+As can be seen in table \ref{table:exp_time}, which shows the elapsed time in raising the adjacency matrix of a network with 10,000 agents to the 1,000th power, using the GPU does not result in a large speed up. This is most likely caused by the time associated with transferring the matrix between the CPU and GPU. Furthermore, exponentiation of the sparse matrix directly is significantly more time-consuming then raising a dense matrix to the same power.
+
+Besides the exponentiation time the various generation times of the model were also taken into consideration, and can be seen in figures \ref{CPU:standard}, \ref{CPU:increased} and \ref{GPU:all}.
+In these figures it can be seen that, when generating networks with the standard, bare minimum, degree per agent, there is hardly any difference between the different generation methods. However, when the networks are generated with the increased degree it is clear that non-sparse, CPU generation is significantly faster than both GPU generation and sparse generation.
 
 \newpage
 
@@ -438,5 +442,33 @@ In an  attempt to speed up performance of the matrix operations cupy was install
     \label{table:gen_10000}
     \caption{Matrix generation times (10000 agents)}
 \end{table}
+
+\subsection{20/4/2021}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/CPU.png}
+        \caption{CPU generation time, standard degree}
+        \label{CPU:standard}
+    \end{figure}
+\end{center}
+
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/CPU_inc.png}
+        \caption{CPU generation time, increased degree}
+        \label{CPU:increased}
+    \end{figure}
+\end{center}
+
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/GPU.png}
+        \caption{GPU generation time}
+        \label{GPU:all}
+    \end{figure}
+\end{center}
 
 \end{document}
