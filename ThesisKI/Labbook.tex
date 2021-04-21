@@ -9,6 +9,11 @@
 \usepackage{eurosym}
 \usepackage{graphicx}
 \usepackage[autopunct=true]{csquotes}
+\usepackage{chngcntr}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{multirow}
 
 \title{Labbook \\ Learning in Social Networks}
 \author{Roman Oort 12189030\\ r.s.oort@gmail.com\\[1cm]{\normal Supervisor: Adrian Haret}}
@@ -100,9 +105,77 @@ To reflect the new-found redundancy of the incremental network generation all fu
 Furthermore some testing was done with different probability distributions to explore which different probability distributions can be used to generate the additional degrees of the agents.
 
 \newpage
+
+\subsection{13/4/2021}
+The network generation function has been updated to include the ability to generate undirected network. To accomplish this the generation function was updated so that, when the links for an agent were being added, instead of choosing separate agents for the incoming and outgoing links, one agent was chosen to establish both an incoming an outgoing relation with. This was also done for the procedure for increasing the degree.
+
+To allow further customization of the degree of agents the function was changed to allow the passing of a numpy probability distribution function, and its accompanying parameters. This was done by allowing the probability function to be passed as an optional parameter, whose default is a normal distribution with $\mu=2, \sigma^2=1$. The parameters of the chosen distribution are given in a list.
+
+Furthermore a function was added which, using the networkx package, allows for a graph representation of a network, an example of which can be seen in figure \ref{graph:degree} below.
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=1.3\textwidth]{ThesisKI/Images/DegreeGraph.png}
+        \caption{Graph representation of network}
+        \label{graph:degree}
+    \end{figure}
+\end{center}
+As can be seen this function shows a network as a graph structure, where the nodes are the agents in the network and the edges are the links between them. This function allows for more insight in the structure of the generated networks and allow for useful visualizations. One can choose between viewing either a directed network, where the directed edges are shown using arrows, or undirected networks. Furthermore, the nodes can be labeled based on different attributes, like the degree, both in and out, the degree as a fraction of the total degree. Another option is to label the agents according to how much their opinion differs from the assumed truth in the network. This function will later be expanded to give the ability to show how many agents are able to be reached by each agents after $t$ steps, and how many steps it takes for each agent to reach every other agent. One can also choose whether or not to include the nodes or the edges in the drawing, which can be useful to reduce clutter in the visualization.
+
+\subsection{16/4/2021}
+Using the interactivity widgets of jupyter notebook the function to visually display the network was made interactive. Using this widgets several options were included in the plots, such as choosing the layout of the graph, whether or not to label the nodes or show the weights of the links. The main advantage of using this interactivity widget is the ability to generate a visualization that differs slightly without first generating an entire network, this allows the visualization of the growth of the network as more and more agents get added.
+
+\subsection{15/4/2021}
+Added implementation for 3 different ways of weight initialization: based on agent beliefs, based on the overlap in the neighbours, and randomly generated weights.
+
+The initialization based on the beliefs looks at the difference in opinion between every two agents, the bigger this difference, the less weight the agent places on the link between them. To efficiently do this the initial belief vector was stacked, columnwise, $n$ times, where $n$ is the amount of agents in the network, and its transpose was computed. This transposed belief matrix was then subtracted from the regular belief matrix, which results in a grid containing the difference in opinion between any two agents. As the truth and the private beliefs were taken to lie on the interval $[0,1]$ the difference between these two can never exceed $1$. Then, to obtain the weights from these difference, the absolute values of these difference were then subtracted from $1$, which as these differences cannot exceed $1$ will always lie on the interval $[0, 1]$. This resulting matrix was then multiplied, elementwise, with the given adjacency matrix, containing only ones to indicate a link and zeros everywhere else, to apply the weights to the link in the network. However, as the difference between any two agents could be equal to $1$, which could result in the deletion of a link, possibly making the network no longer strongly connected, the weights were multiplied by a given factor on the interval $[0, 1]$.
+
+The initialization using the overlap in neighbours is based on the principle that agents are aware of the structure of the network, or at least the network in close proximity to them. Under this assumption an agent would place less weight on one of its neighbours if there is a large overlap between their neighbours, as this would mean they receive a lot of the same information from the same agents. Therefore there would be little new information shared between them, making this information less valuable. This was implemented by iterating over each agent present in the network and finding their neighbours by counting the non-zero elements in their respective row. This was repeated for each of the neighbours. The overlap between these sets was then computed as a fraction of the length of the first agents set of neighbours. This fraction would then be multiplied by a given factor on the interval $[0, 1]$ to ensure total overlap between agents would not delete any links. This, discounted, fraction of overlap would then be inserted into a matrix at the coordinates of the respective link. This resulting matrix would then be subtracted from the original adjacency matrix to place less weights on those links with more overlap.
+
+Finally the random initialization simply generates an array of the same shape as the original and fills it with values sampled independently from a given probability distribution, by default a uniform distribution on the interval $[0, 1]$.
+
+\subsection{17/5/2021}
+The function for the overlap initialization of the weights was changed to work as previously, as the earlier implemented version would occasionally result in negative weights or delete links.
+
+Due to some memory issues when trying to create a $10,000 \times 10,000$ array a cell was added to use Google Colab integration in an attempt to work around this limit. Furthermore the ability to choose the initialization of the weights with the interactive network visualization plot was added, allowing for the swapping of weights on the fly.
+
+\subsection{18/4/2021}
+Look into the first implementations of converging the networks. These functions were created by iteratively multiplying the original weight matrix with itself. After this multiplication the, element-wise, difference between the matrix at time $t-1$ and $t$ would be computed. All of these difference would be summed, and when this sum approaches zero, within a sufficiently small tolerance, the iteration would stop, resulting in both the converged matrix, and the time $t$ at which the matrix achieved convergence. However, these computations would take a very long time as the network size, and time $t$, increased.
+
+\newpage
+
+\section{Week 4}
+\subsection{19/4/2021}
+No significant functions were implemented, however, developments were made in the more technical aspects, w.r.t. the computations speed and memory consumption of the operations and networks.
+
+The integration between google colab and the interactivity widget used in the notebook is spotty, so another solution had to be found for dealing with the memory issues of the local machine. After testing once again the limitation proved to be a temporary one, by my best guess caused by the long time between kernel restarts. This allowed to use my local machine to generate large networks, up to at least $30000 \times 30000$ agents, which however did take a large amount of space, not to mention computation time on these networks grew exceedingly large.
+
+In an  attempt to speed up performance of the matrix operations cupy was installed, which allowed the use of cuda to speed up matrix operations of both the numpy and scipy packages, to use the NVIDIA GeForce 2070 Max-Q of my local system. Furthermore, the use of the sparse matrix representation was investigated to reduce memory usage of the large, mainly empty, networks.
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lllll}
+        \toprule
+        Matrix Type\\ ($10000 \times 10000$) & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Device &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        Time (s) & 113.56 & 133.43 & 2589.00 & - \\
+        \bottomrule
+    \end{tabular}
+    \label{tabl:exp_time}
+    \caption{Matrix exponentiation times (1000th power)}
+\end{table}
+
+\newpage
+
 \section{Remaining Figures}
+
 \subsection{10/4/2021}
+
 \subsubsection{Degree distribution, per generation type}
+
 \begin{center}
     \begin{figure}[!htbp]
         \centering
@@ -120,7 +193,7 @@ Furthermore some testing was done with different probability distributions to ex
     \end{figure}
 \end{center}
 
-\subsection*{11/4/2021}
+\subsection{11/4/2021}
 \subsubsection{Degree Per Agent, Instant}
 \begin{center}
     \begin{figure}[!htbp]
@@ -174,4 +247,196 @@ Furthermore some testing was done with different probability distributions to ex
         \label{DPA:IncCom}
     \end{figure}
 \end{center}
+\newpage
+\subsection{13/4/2021}
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=1.3\textwidth]{ThesisKI/Images/DegreeGraph.png}
+        \caption{Graph representation of network}
+        \label{graph:degree}
+    \end{figure}
+\end{center}
+
+\subsection{19/4/2021}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 5.87 & & & \\
+                                          & Increased Degree & 42.26 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 16.24 & & & \\
+                                  & Increased Degree & 43.26 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_1000_rest}
+    \caption{Matrix generation times (1000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 12.11 & & & \\
+                                  & Increased Degree & 81.07 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 7.42 & & & \\
+                                  & Increased Degree & 46.40 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_2000}
+    \caption{Matrix generation times (2000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 19.14 & & & \\
+                                  & Increased Degree & 119.74 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 12.03 & & & \\
+                                  & Increased Degree & 71.21 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_3000}
+    \caption{Matrix generation times (3000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 27.40 & & & \\
+                                  & Increased Degree & 166.57 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 17.42 & & & \\
+                                  & Increased Degree & 95.62 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_4000}
+    \caption{Matrix generation times (4000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 35.11 & & & \\
+                                  & Increased Degree & 207.34 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 23.66 & & & \\
+                                  & Increased Degree & 122.63 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_5000}
+    \caption{Matrix generation times (5000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 47.44 & & & \\
+                                  & Increased Degree & 265.88 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 32.71 & & & \\
+                                  & Increased Degree & 161.43 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_6000}
+    \caption{Matrix generation times (6000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 52.88 & & & \\
+                                  & Increased Degree & 292.68 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 39.87 & & & \\
+                                  & Increased Degree & 181.62 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_7000}
+    \caption{Matrix generation times (7000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 62.79 & & & \\
+                                  & Increased Degree & 336.28 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 43.24 & & & \\
+                                  & Increased Degree & 199.53 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_8000}
+    \caption{Matrix generation times (8000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 71.73 & & & \\
+                                  & Increased Degree & 401.65 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 50.22 & & & \\
+                                  & Increased Degree & 229.47 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_9000}
+    \caption{Matrix generation times (9000 agents)}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
+        \midrule 
+        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
+        \midrule
+        \multirow{2}{*}{Directed} & Standard Degree & 81.08 & & & \\
+                                  & Increased Degree & 421.22 & & & \\
+        \multirow{2}{*}{Undirected} & Standard Degree & 60.66 & & & \\
+                                  & Increased Degree & 260.42 & & & \\
+        \bottomrule
+    \end{tabular}
+    \label{table:gen_10000}
+    \caption{Matrix generation times (10000 agents)}
+\end{table}
+
 \end{document}
