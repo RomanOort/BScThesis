@@ -232,11 +232,38 @@ Finally computing the convergent belief of a network was reconsidered. The metho
 
 \subsection{23/4/2021}
 
-Another option was added to the function for drawing the network. The nodes can now also be labeled by the time it takes for them to be reached, or reach, every other agent in the network. This was done by iteratively multiplying the network with itself, and at each time step note which agents had a link to every agent in the network. \newline
+Another option was added to the function for drawing the network. The nodes can now also be labeled by the time it takes for them to be reached, or reach, every other agent in the network. This was done by iteratively multiplying the network with itself, and at each time step note which agents had a link to every agent in the network.
 
-Looked into the computation of eigenvectors once more. Proces can be sped up greatly by using the sparse m atrix function for eigenvector calculation. This function has the ability to specify the number of eigenvectors that should be returned, and allows to specify which eigenvectors they should be. As we are interested only in the eigenvector of $\lambda=1$, which is the largest eigenvalue, we can simply compute the single eigenvector corresponding to the largest eigenvalue. This allows to computation to speed up greatly: for a $10000\times 10000$ matrix the time to compute the eigenvectors goes from $\approx$ 20 seconds to $\approx$ .03 seconds.
+Looked into the computation of eigenvectors once more. Process can be sped up greatly by using the sparse matrix function for eigenvector calculation. This function has the ability to specify the number of eigenvectors that should be returned, and allows to specify which eigenvectors they should be. As we are interested only in the eigenvector of $\lambda=1$, which is the largest eigenvalue, we can simply compute the single eigenvector corresponding to the largest eigenvalue. This allows to computation to speed up greatly: for a $10000\times 10000$ matrix the time to compute the eigenvectors goes from $\approx$ 20 seconds to $\approx$ .03 seconds.
 
-However the eigenvectors are still not always strictly positive. Furthermore the lack off convergence to wisdom was also more carefully examined and the most likely cause appears to be the generation of the beliefs. Currently all beliefs are generated as $p_i^{(0)} = \mu + e_i$, where $i$ is a zero mean error term. However, the beliefs are taken to lie on the interval $[0, 1]$, but the method of generation does not guarantee this interval. It is possible for an error term to be generated that, when summed with $\mu$, falls outside this interval. To ensure the beliefs fall in the proper interval they are normalized to this interval. However, as a consequence of this normalization the mean of the beliefs are shifted which in turn throws of the convergence, as the networks tend to convergence to the mean belief of the network, or at close to the mean. As can be seen in  figure
+Furthermore the lack off convergence to wisdom was also more carefully examined and the most likely cause appears to be the generation of the beliefs. Currently all beliefs are generated as $p_i^{(0)} = \mu + e_i$, where $i$ is a zero mean error term. However, the beliefs are taken to lie on the interval $[0, 1]$, but the method of generation does not guarantee this interval. It is possible for an error term to be generated that, when summed with $\mu$, falls outside this interval. To ensure the beliefs fall in the proper interval they are normalized to this interval. This is accomplished using value normalization:
+\begin{equation}
+    x_{i, norm} = \frac{x_i - y_{min}}{y_{max} - y_{min}}
+\end{equation}
+Where $ y_{min}$ and $y_{max}$ are the lower and upper bound of the new interval respectively.
+However, as a consequence of this normalization the mean of the beliefs are shifted which in turn throws of the convergence, as the networks tend to convergence to the mean belief of the network, or at close to the mean. As can be seen in figure \ref{wisdom:nonorm} below.
+\newpage
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/WithoutNormalizedTruth.png}
+        \caption{Degree Distribution, Instant}
+        \label{wisdom:nonorm}
+    \end{figure}
+\end{center}
+
+However, the solution to this issue seems to be normalize the assumed truth of the network over the same interval as the beliefs. As the mean of the, non-normalized, belief vector should approach the truth of the network, as this as used as the basis for the private signals at $t=0$, normalizing the assumed truth to the same interval should shift this over to remain the mean of the beliefs. Applying this normalization does seem to solve the lack of convergence as can be seen in \ref{wisdom:norm} below.
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/WithNormalizedTruth.png}
+        \caption{Degree Distribution, Instant}
+        \label{wisdom:norm}
+    \end{figure}
+\end{center}
+
+\newpage
+
 \newpage
 
 \section{Remaining Figures}
@@ -326,187 +353,6 @@ However the eigenvectors are still not always strictly positive. Furthermore the
         \label{graph:degree}
     \end{figure}
 \end{center}
-
-\subsection{19/4/2021}
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 5.87 & & & \\
-                                          & Increased Degree & 42.26 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 16.24 & & & \\
-                                  & Increased Degree & 43.26 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_1000_rest}
-    \caption{Matrix generation times (1000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 12.11 & & & \\
-                                  & Increased Degree & 81.07 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 7.42 & & & \\
-                                  & Increased Degree & 46.40 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_2000}
-    \caption{Matrix generation times (2000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 19.14 & & & \\
-                                  & Increased Degree & 119.74 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 12.03 & & & \\
-                                  & Increased Degree & 71.21 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_3000}
-    \caption{Matrix generation times (3000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 27.40 & & & \\
-                                  & Increased Degree & 166.57 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 17.42 & & & \\
-                                  & Increased Degree & 95.62 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_4000}
-    \caption{Matrix generation times (4000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 35.11 & & & \\
-                                  & Increased Degree & 207.34 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 23.66 & & & \\
-                                  & Increased Degree & 122.63 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_5000}
-    \caption{Matrix generation times (5000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 47.44 & & & \\
-                                  & Increased Degree & 265.88 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 32.71 & & & \\
-                                  & Increased Degree & 161.43 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_6000}
-    \caption{Matrix generation times (6000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 52.88 & & & \\
-                                  & Increased Degree & 292.68 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 39.87 & & & \\
-                                  & Increased Degree & 181.62 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_7000}
-    \caption{Matrix generation times (7000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 62.79 & & & \\
-                                  & Increased Degree & 336.28 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 43.24 & & & \\
-                                  & Increased Degree & 199.53 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_8000}
-    \caption{Matrix generation times (8000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 71.73 & & & \\
-                                  & Increased Degree & 401.65 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 50.22 & & & \\
-                                  & Increased Degree & 229.47 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_9000}
-    \caption{Matrix generation times (9000 agents)}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{llllll}
-        \toprule
-        Matrix Type &  & \multicolumn{2}{c}{Normal} & \multicolumn{2}{c}{Sparse}\\
-        \midrule 
-        Network Type &  &\textbf{CPU} & \textbf{GPU} & \textbf{CPU} & \textbf{GPU} \\
-        \midrule
-        \multirow{2}{*}{Directed} & Standard Degree & 81.08 & & & \\
-                                  & Increased Degree & 421.22 & & & \\
-        \multirow{2}{*}{Undirected} & Standard Degree & 60.66 & & & \\
-                                  & Increased Degree & 260.42 & & & \\
-        \bottomrule
-    \end{tabular}
-    \label{table:gen_10000}
-    \caption{Matrix generation times (10000 agents)}
-\end{table}
 
 \subsection{20/4/2021}
 \begin{center}
