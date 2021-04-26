@@ -7,10 +7,19 @@
 \usepackage{mathtools}
 \usepackage{textcomp}
 \usepackage{eurosym}
+\usepackage{amssymb}
 \title{Literature Draft}
 \author{Roman Oort}
 \date{\today}
+
+%%% PERSONAL SHORTCUTS
 \DeclareMathOperator*{\plim}{plim}
+\newcommand{\T}{\textbf{T}}
+\newcommand{\Tij}{\textbf{T}_{ij}}
+\newcommand{\Soc}{(\T(n))^{\infty}_{n=1}}
+\newcommand{\beli}[3][2]{p_{#2}^{(#3)}}
+\newcommand{\belvec}[2]{\textbf{p}^{(#2)}}
+
 \begin{document}
 
 \maketitle
@@ -20,56 +29,58 @@
 \newpage
 
 \section{Literature Review}
-
 \subsection{Social Learning}
 Social learning is a field of study used in various different disciplines, ranging from economy to psychology, concerning the process of changing beliefs in groups \cite{reed2010sociallearning}. Research in this field is dedicated to determining how individuals, and groups as a whole, change their beliefs and actions based on beliefs and actions of those around them. Many models have been proposed to formalize this process \cite{golub2017learning}, with the DeGroot model being one of the most prominent \cite{degroot1974concensus}.
 
 \subsection{DeGroot Model}
 \subsubsection{Agent Interaction}
-A DeGroot model consists of a finite set of $N=\{1, 2, ..., n\}$ of agents all interacting with each other and passing information. The $n \times n$ \emph{interaction} matrix \textbf{T} describes the nature of these interactions: whose opinions are heeded by whom, and how much so, among others. If the entry $\textbf{T}_{ij} > 0$ it indicates that agent $i$ listens to agent $j$, and the value of this entry determines how much weight agent $i$ places on agents $j$'s opinion: the higher this value the more important $j$'s opinion is to $i$. It is important to note that \textbf{T} is a positive matrix, meaning it is not possible for an agent to place a negative weight on another agents opinion, they are only ever capable of ignoring other agents, or agreeing with them in some manner. 
+A DeGroot model consists of a finite set of $N=\{1, 2, ..., n\}$ of agents all interacting with each other and passing information. The $n \times n$ \emph{interaction} matrix \T describes the nature of these interactions: whose opinions are heeded by whom, and how much so, among others. If the entry $\Tij > 0$ it indicates that agent $i$ listens to agent $j$, and the value of this entry determines how much weight agent $i$ places on agents $j$'s opinion: the higher this value the more important $j$'s opinion is to $i$. It is important to note that \T is a positive matrix, meaning it is not possible for an agent to place a negative weight on another agents opinion, they are only ever capable of ignoring other agents, or agreeing with them in some manner. 
 
-Furthermore, the weight matrix \textbf{T} is a row-stochastic matrix, meaning that its rows sum to one:
+Furthermore, the weight matrix \T is a row-stochastic matrix, meaning that its rows sum to one:
 \begin{align*}
-    \sum_{j=1}^{n} \textbf{T}_{ij} = 1
+    \sum_{j=1}^{n} \Tij = 1
 \end{align*}
 
-Another important property of this interaction matrix \textbf{T} is that it is not necessarily symmetrical, making it entirely possible for an agent $i$ to hold the opinion of agent $j$ in high regard, while $j$ thinks very little of $i$'s opinion, or not even anything  at all.
+Another important property of this interaction matrix \T is that it is not necessarily symmetrical, making it entirely possible for an agent $i$ to hold the opinion of agent $j$ in high regard, while $j$ thinks very little of $i$'s opinion, or not even anything  at all.
 
 \newpage
 
 \subsubsection{Belief \& Learning}
+\label{beliefs}
 As mentioned before, the DeGroot model is a model used to simulate social learning, and is often referred to as a form of \textit{naive social learning}. This means that this model simulates the development the beliefs of the agents present in the network, as time progresses, but the updating rule at each time-step is a very simple rule and is therefore called naive.
 
 The belief of an agent $i \in N$ at a time $t \in \{0, 1, 2, ...\}$ is denoted as $p_{i}^{(t)}$, where this belief is generally taken as a real number on the interval $[0, 1]$. At the start of the process, $t=0$, each agent $i$ is given a personal belief, through a private signal,
 \begin{align*}
-    p_{i}^{(0)} = \mu + e_i
+    \beli{i}{0} = \mu + e_i
 \end{align*}
 where $\mu$ is a real number, again on the interval $[0, 1]$, assumed to be the true state of the network, and $e_i$ is the random, zero mean, noise of agent $i$'s signal. \newline
 The beliefs of all agents in the network, are aggregated into the belief vector $\textbf{p}^{(t)}$, where the $i$th entry corresponds to the belief of agent $i$, at time $t$.
 
 As time progresses the agents in the network update their own belief based on the beliefs of the agents around them, using the following updating rule:
 \begin{equation}
-    \textbf{p}^{(t)} = \textbf{T}\textbf{p}^{(t-1)} \label{updating:standard}
+    \label{updating:standard}
+    \textbf{p}^{(t)} = \T\textbf{p}^{(t-1)}
 \end{equation}
 which means that an agent $i$'s opinion, at time $t$, is simply the matrix multiplication of the interaction matrix and the belief vector at time $t-1$. This makes the update rule for an agent $i$ in the network the follows:
 \begin{align*}
-    p_{i}^{(t)} = \sum_{j=1}^{n}T_{ij}p_{j}^{(t-1)}
+    \beli{i}{t} = \sum_{j=1}^{n}\Tij\beli{j}{t-1}
 \end{align*}
 which simply amounts to the weighted sum of the beliefs of all neighbours of agent $i$ in the network, where agent $i$'s neighbours are those agents $j$ in the network to whom $i$ listens.
 
 Furthermore, it is possible to compute the belief vector $\textbf{p}^{(t)}$, without computing the belief vector at every preceding $t^\prime < t$, the formula for which can be derived from equation \ref{updating:standard}, as follows:
 \begin{align*}
-    \textbf{p}^{(t)} &= \textbf{T}\textbf{p}^{(t-1)} \\
-    &= \textbf{T}(\textbf{T}\textbf{p}^{(t-2)}) \text{, which, eventually, becomes}\\
-    &= \textbf{T}^{t}\textbf{p}^{(0)}
+    \textbf{p}^{(t)} &= \T\textbf{p}^{(t-1)} \\
+    &= \T(\T\textbf{p}^{(t-2)}) \text{, which, eventually, becomes}\\
+    &= \T^{t}\textbf{p}^{(0)}
 \end{align*}
 
 \newpage
 
 \subsubsection{Convergence}
+\label{convergence}
 As we are interested in the spread of information through the network, and whether the agents in a network will learn the supposed true state of the world, an important notion is the concept of \emph{convergence}. A matrix \textbvf{T} is said to convergent if
 \begin{equation*}
-    \lim_{t\to\infty} \textbf{T}^t\textbf{p}
+    \lim_{t\to\infty} \T^t\textbf{p}
 \end{equation*}
 exists for all $\textbf{p} \in [0, 1]^n$. That is to say, as time progresses sufficiently, the beliefs of the agents, independent of their starting signal, approach a constant value and no longer change.
 
@@ -77,17 +88,75 @@ Another important property is \emph{aperiodicity}, which concerns the cycles, wh
 
 A final notion important in the convergence of social networks is \emph{connectedness}. When applied to undirected networks, in which a link between two agents works both ways, a network is said to be connected when there exists some path between any two agents $i$ and $j$. However, when applied to \emph{directed} networks this notion changes slightly, and can be divided in two distinct notions, more specifically, a connected directed network can be either \emph{weakly} or \emph{strongly} connected. A directed network is said to weakly connected if there exists some undirected path between any two agents in the network. However, if there also exists a \emph{directed} path between any two agents, a directed network is said to be strongly connected.
 
-Now, assuming that \textbf{T}, is the interaction matrix of a strongly connected network, the following three statements are equivalent:
+Now, assuming that \T, is the interaction matrix of a strongly connected network, the following three statements are equivalent:
 \begin{itemize}
-    \item[-] \textbf{T} is convergent
-    \item[-] \textbf{T} is aperiodic
-    \item[-] There is some unique left eigenvector, \textbf{s}, of \textbf{T}, corresponding to the eigenvalue $\lambda=1$, such that, for every \textbf{p}$\in [0,1]^n$,
+    \item[-] $\T$ is convergent
+    \item[-] $\T$ is aperiodic
+    \item[-] There is some unique left eigenvector, \textbf{s}, of \T, corresponding to the eigenvalue $\lambda=1$, such that, for every \textbf{p}$\in [0,1]^n$, and every agent $i$,
     \begin{align*}
-        (\lim_{t\to\infty}\textbf{T}^t\textbf{p}) = \textbf{sp}
+        (\lim_{t\to\infty}\T^t\textbf{p})_i = \textbf{sp}
     \end{align*}
 \end{itemize}
 
+ This last eigenvector property does not only give a definition of convergence, but it also provides the actual convergent belief of the network, which is nothing more than a multiplication of the influence vector \textbf{s} and the belief vector \textbf{p}.
+
 \newpage
+
+\subsubsection{Wisdom of Crowds}
+
+Having established the convergence property for social networks it becomes possible to look towards the notion of wisdom, central in \cite{golub2010naive}, where they defined to mean that a given network not only converges, but converges to the assumed true state of the model, $\mu$, in particular in the context of large societies.
+
+To encapsulate the idea of large societies, providing insight in the behaviour of these models as the participating number of agents becomes sufficiently large, limiting statements with regard to the number of agents are used. A society is defined as a sequence of networks, indexed by the number of agents in the network, $n$: $\Soc$. This means that the entry $\textbf{T}(n)$ is the interaction matrix of the network in the sequence with $n$ agents, where $\textbf{T}(n)_{ij}$ is used to denote the entry $(i,j)$ in this specific sequence. A similar method of indexing is applied to all previously discussed properties of these networks, i.e.: belief vectors, influence vectors.
+
+The beliefs of the agents are generated using the same mechanism described in section \ref{beliefs}, i.e.: independently distributed zero mean error terms added to the assumed truth, where $\beli{i}{t}(n)$ is used to indicate the belief of agent $i$ at time $t$ in a network with $n$ agents. Under the assumption that every network in our given sequence converges, we write the convergent belief of an agent $i$, that is to say the belief as $t \to\infty$, as $\beli{i}{\infty}(n)$, as described in \ref{convergence}.
+
+Using these notations a sequence $\Soc$ is deemed to be wise if:
+\begin{equation}
+    \label{wisdom:equation}
+    \plim_{n\to\infty}\max_{i \leq n}|\beli{i}{\infty}(n) - \mu| = 0
+\end{equation}
+That is to say, a sequence of network is wise if, as $n$ becomes sufficiently large, the convergent belief of \emph{every} agent in the network is equal to the truth, which, using the fact that the convergent belief can be computed using the influence vector \textbf{s} can be rewritten as:
+\begin{equation}
+    \label{wisdom:influence}
+    \plim_{n\to\infty} \textbf{s}(n)\textbf{p}^{(0)}(n) = \mu
+\end{equation}
+which holds if and only if $s_{1}(n) \to 0$, where $s_1(n)$ is the first entry in the \emph{ordered} influence vector \textbf{s}. In other words, a sequence of networks if wise if and only if the influence of the most influential agent tends to zero, as $n$ becomes sufficiently large.
+
+\newpage
+
+\subsection{Obstructions to Wisdom}
+
+\subsubsection{Prominent Families}
+
+One general obstacle to the convergence to wisdom is similar to requirement of vanishing influence of individual agents. Namely, the existence of groups in the network that are disproportionally influential over other groups.
+A general obstacle to the convergence to wisdom is presence of groups that are disproportionally influential when compared to other groups in the network.
+
+To reason about groups and the influence between them a definition of the influence of a groups is necessary, as all previously mentioned notions of influences were applied only on the scale of individual agents. Let $B$ and $C$ be two groups in the network s.t. $B \subset N$ and $C \subset N$ and $B \cap C = \emptyset$, where $N$ is the set of all agents in the network, then the weight that group $B$ places on $C$ is defined as follows:
+\begin{equation}
+    \textbf{T}_{B, C} = \sum_{i\in B}\sum_{j \in C} \Tij
+\end{equation}
+Simply put: the weight of a group $C$ on another group $B$ is simply the sum of all incoming links from agents in $B$ to agents in $C$.
+
+Another measure used to describe the influence of groups is the prominence of a group, which is a measure of the influence of a group $B$ over the entire network \textbf{T}, rather than another group in the network.
+ A network is said to be prominent, at a given $t$, if every agent $i \notin B$ in the network listens to some agent $j\in B$, at that $t$.
+A group $B$ is therefore said to be prominent in $t$ steps relative to a network \textbf{T} if, for every $i \notin B$, $(\textbf{T}^{t})_{i,B} > 0$. An important property based on this notion is the $t$-step prominence of B relative to \textbf{T}: 
+\begin{equation}
+    \pi_B(\textbf{T}; t) = \min_{i\notin B} (\textbf{T}^{t})_{i,B} > 0
+\end{equation}
+which is the smallest $t$ for which a group $B$ manages to influence every agent in the network outside said group.\newline
+
+However, these definitions of groups are defined only on single networks while, in the context of wisdom, we are interested in sequences of networks. The notion of groups can be slightly expanded to be useful in the context of societies. For this end we define a family as a sequence of groups $(B_n)$, where each $B_n \subset \{1, ..., n\}$, such that each group in the sequence is a subset of the agents present in the network of size $n$.
+
+Having extended the notion of groups to the context of societies the measure of prominence can be expanded in a similar manner. Namely, a family $(B_n)$ is said to to uniformly prominent relative to $\Soc$ if there exists a constant, $\alpha$, such that $B_n$
+\subsubsection{Non-cooperative Agents}
+
+\subsection{Variations}
+\subsubsection{$\varepsilon$-DeGroot}
+\subsubsection{Private Belief}
+\subsubsection{Variable weights}
+
+\newpage
+
 
 
 \bibliographystyle{apalike}
