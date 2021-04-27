@@ -246,23 +246,35 @@ However, as a consequence of this normalization the mean of the beliefs are shif
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=.8\textwidth]{ThesisKI/Images/WithoutNormalizedTruth.png}
+        \includegraphics[width=.7\textwidth]{ThesisKI/Images/WithoutNormalizedTruth.png}
         \caption{Degree Distribution, Instant}
         \label{wisdom:nonorm}
     \end{figure}
 \end{center}
 
-However, the solution to this issue seems to be normalize the assumed truth of the network over the same interval as the beliefs. As the mean of the, non-normalized, belief vector should approach the truth of the network, as this as used as the basis for the private signals at $t=0$, normalizing the assumed truth to the same interval should shift this over to remain the mean of the beliefs. Applying this normalization does seem to solve the lack of convergence as can be seen in \ref{wisdom:norm} below.
+However, the solution to this issue seems to be normalize the assumed truth of the network over the same interval as the beliefs. As the mean of the, non-normalized, belief vector should approach the truth of the network, as this as used as the basis for the private signals at $t=0$, normalizing the assumed truth to the same interval should shift this over to remain the mean of the beliefs. Applying this normalization does seem to solve the lack of convergence as can be seen in figure \ref{wisdom:norm} below.
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=.8\textwidth]{ThesisKI/Images/WithNormalizedTruth.png}
+        \includegraphics[width=.7\textwidth]{ThesisKI/Images/WithNormalizedTruth.png}
         \caption{Degree Distribution, Instant}
         \label{wisdom:norm}
     \end{figure}
 \end{center}
 
 \newpage
+
+\section{Week 5}
+
+\subsection{26/4}
+
+Added another option to the visualization function that labels the nodes based on their time to prominence, or in other words, the lowest $t$ at which they receive information from every agent. For directed networks the nodes a distinction is made between incoming prominence and outgoing prominence. However, in undirected networks these two measures are the same.
+
+This was done taking the current matrix that was given as input to the draw function and multiplying it with the original matrix at each step, simulating the updating rule. As soon as every entry in the matrix becomes non-zero this process stops. During this multiplication process it was stored when each row or column was entirely non-zero for the first time, which was then used as a label for the nodes in question.
+
+\subsection{27/4}
+
+Added another label to the visualization function, the $t$-step prominence. This shows the minimum weight, in case of directed networks either incoming or outgoing, of the connections of an agent at a given $t$. This was done by simply getting the minimum over the respective axes for the \textbf{T} matrix at the given $t$, which had to be computed in the process anyway, therefore adding little computation time.
 
 \newpage
 
