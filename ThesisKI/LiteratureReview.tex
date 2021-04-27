@@ -157,11 +157,31 @@ Having extended the notion of groups to the context of societies the measure of 
 \end{equation*}
 Or, in other words, a finite family is a family that has a finite upper bound on its members.
 
-Now, it is the case that the disproportional influence of groups can cause a network no longer to be wise, namely, the presence of finite, uniformly prominent family relative to the society $\Soc$, then this society is not wise.
+Now, it is the case that the disproportional influence of groups can cause a network no longer to be wise, namely, the presence of finite, uniformly prominent family relative to the society $\Soc$, prevents this society from becoming wise.
 
 \subsubsection{Non-cooperative Agents}
 
 \subsubsection{Structural Obstructions}
+
+Finally there are some obstructions that prevent the occurrence of wisdom in a given society that are more dependent on the actual structure of the network rather than the weights on the links or adherence to the updating rules. One example of such a structure is a specific network, called a star network. A star network is a fully connected network in which there is one agent which has a connection to every other agent in the network, while every other agent only has a connection to this one agent. These networks are called star networks because, when visualized, obtain a star-like shape, an example of which can be seen in figure \ref{network:star} below.
+
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=\textwidth]{ThesisKI/Images/DegreeStarGraph.png}
+        \caption{Degree Distribution, Instant}
+        \label{network:star}
+    \end{figure}
+\end{center}
+\newpage
+Here the network is shown for $n=15$, but this specific shape of network can be extended to any size $n$, using the same principle of one agents who is connected to every other agent, with the other agents only connecting with this center agent. As a consequence this one agent in the center has a disproportional amount influence when compared to the other agents. Therefore, if this agent's initial belief diverges enough from the truth the condition for wisdom described in \ref{wisdom:influence} is no longer satisfied.
+
+However, networks where there is not a single agent with a disproportionate amount of connections can still disrupt the wisdom of a network. An example of this is the unbalanced line network described by \cite{golub2010naive}, where the network forms a line, where each agent $n$ places a weight of $\delta \in (0, \frac{1}{2})$ on the agent $n+1$, and places a weight of $1-\delta$ on the agent $n-1$. The two agents at the start and end of this line, $1$ and $n$, place a weight on their own opinion of $1-\delta$ and $\delta$ respectively. In this case the influence of agent $1$ can become arbitrarily close to $1$ by choosing $\delta$ to be sufficiently small, once again violating \ref{wisdom:influence}, preventing wisdom.
+
+So, as there are structural obstructions to the wisdom of a society, so too are there some structural conditions that need be satisfied to ensure wisdom. Determining these conditions requires some more notions about the structures of the network, like the concept of balance. For a network to be considered balanced there must be a sequence $j(n) \to \infty$, such that if $|B_n| \leq j(n)$ then:
+\begin{equation}
+    \sup_n \frac{\T_{B^c_n, B_n}(n)}{\T_{B_n, B^c_n}(n)} < \infty
+\end{equation}
 
 \subsection{Variations}
 \subsubsection{$\varepsilon$-DeGroot}
