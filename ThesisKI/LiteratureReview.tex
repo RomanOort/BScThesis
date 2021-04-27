@@ -141,14 +141,27 @@ Another measure used to describe the influence of groups is the prominence of a 
  A network is said to be prominent, at a given $t$, if every agent $i \notin B$ in the network listens to some agent $j\in B$, at that $t$.
 A group $B$ is therefore said to be prominent in $t$ steps relative to a network \textbf{T} if, for every $i \notin B$, $(\textbf{T}^{t})_{i,B} > 0$. An important property based on this notion is the $t$-step prominence of B relative to \textbf{T}: 
 \begin{equation}
-    \pi_B(\textbf{T}; t) = \min_{i\notin B} (\textbf{T}^{t})_{i,B} > 0
+    \pi_B(\textbf{T}; t) = \min_{i\notin B} (\textbf{T}^{t})_{i,B}
 \end{equation}
-which is the smallest $t$ for which a group $B$ manages to influence every agent in the network outside said group.\newline
+This is the smallest weight that is placed on some agent in the group $B$, by some agent $i\notin B$. Therefore this value will only be larger than zero for any values $t \geq t^{\prime}$, where $t^{\prime}$ is the smallest t for which
+the group $B_n$ is prominent relative to the network.
+\newline
 
 However, these definitions of groups are defined only on single networks while, in the context of wisdom, we are interested in sequences of networks. The notion of groups can be slightly expanded to be useful in the context of societies. For this end we define a family as a sequence of groups $(B_n)$, where each $B_n \subset \{1, ..., n\}$, such that each group in the sequence is a subset of the agents present in the network of size $n$.
 
-Having extended the notion of groups to the context of societies the measure of prominence can be expanded in a similar manner. Namely, a family $(B_n)$ is said to to uniformly prominent relative to $\Soc$ if there exists a constant, $\alpha$, such that $B_n$
+Having extended the notion of groups to the context of societies the measure of prominence can be expanded in a similar manner. Namely, a family $(B_n)$ is said to to uniformly prominent relative to $\Soc$ if there exists a constant, $\alpha$, and there is a $t$ such that $B_n$ is prominent in $t$ steps relative to $\T(n)$, and $\pi_B(\textbf{T}; t) \geq \alpha$, for every $n$. In other words, for a family $B_n$ to be uniformly prominent it has to have a minimum influence greater than $\alpha$ over each individual agent $i$ outside of $B_n$, at every size $n$ of the society.
+
+\noindent Finally, a family $(B_n)$ is called finite if there exists some $q$ such that:
+\begin{equation*}
+    \sup_n |B_n| \leq q
+\end{equation*}
+Or, in other words, a finite family is a family that has a finite upper bound on its members.
+
+Now, it is the case that the disproportional influence of groups can cause a network no longer to be wise, namely, the presence of finite, uniformly prominent family relative to the society $\Soc$, then this society is not wise.
+
 \subsubsection{Non-cooperative Agents}
+
+\subsubsection{Structural Obstructions}
 
 \subsection{Variations}
 \subsubsection{$\varepsilon$-DeGroot}
