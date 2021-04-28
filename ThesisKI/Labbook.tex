@@ -247,7 +247,7 @@ However, as a consequence of this normalization the mean of the beliefs are shif
     \begin{figure}[!htbp]
         \centering
         \includegraphics[width=.7\textwidth]{ThesisKI/Images/WithoutNormalizedTruth.png}
-        \caption{Degree Distribution, Instant}
+        \caption{Non-normalized truth, convergent belief}
         \label{wisdom:nonorm}
     \end{figure}
 \end{center}
@@ -257,7 +257,7 @@ However, the solution to this issue seems to be normalize the assumed truth of t
     \begin{figure}[!htbp]
         \centering
         \includegraphics[width=.7\textwidth]{ThesisKI/Images/WithNormalizedTruth.png}
-        \caption{Degree Distribution, Instant}
+        \caption{Normalized truth, convergent belief}
         \label{wisdom:norm}
     \end{figure}
 \end{center}
@@ -266,15 +266,43 @@ However, the solution to this issue seems to be normalize the assumed truth of t
 
 \section{Week 5}
 
-\subsection{26/4}
+\subsection{26/4/2021}
 
 Added another option to the visualization function that labels the nodes based on their time to prominence, or in other words, the lowest $t$ at which they receive information from every agent. For directed networks the nodes a distinction is made between incoming prominence and outgoing prominence. However, in undirected networks these two measures are the same.
 
 This was done taking the current matrix that was given as input to the draw function and multiplying it with the original matrix at each step, simulating the updating rule. As soon as every entry in the matrix becomes non-zero this process stops. During this multiplication process it was stored when each row or column was entirely non-zero for the first time, which was then used as a label for the nodes in question.
 
-\subsection{27/4}
+\subsection{27/4/2021}
 
 Added another label to the visualization function, the $t$-step prominence. This shows the minimum weight, in case of directed networks either incoming or outgoing, of the connections of an agent at a given $t$. This was done by simply getting the minimum over the respective axes for the \textbf{T} matrix at the given $t$, which had to be computed in the process anyway, therefore adding little computation time.
+
+\subsection{28/4/2021}
+Started examining different ways to implement non-cooperative agents in the networks. The first would be to have the first agent in a network be a non-cooperative agent, another would be to generate the non-cooperative agent and its links after the regular network has already been generated.
+
+\subsubsection*{First agent in the network}
+\begin{itemize}
+    \item[+] Present in every network, regardless of subset
+    \item[+] Always the same agent
+    \item[+] Easy to account for when generating links during network generation
+    \item[+] Easy when growing an existing network to a larger size
+    \item[-] Consumes spot of another agent
+    \item[-] Have to generate a new network when switching between cooperative or non-cooperative
+    \item[-] Have to modify the existing generation function
+    \item[-] Somewhat harder to expand to multiple non-cooperative agents
+\end{itemize}
+
+\newpage
+
+\subsubsection*{Added after generation}
+\begin{itemize}
+    \item[+] Presence in every network can be guaranteed
+    \item[+] Always final entries in network
+    \item[+] Requires no modification of current network generation method
+    \item[+] Easy to extend to multiple agents
+    \item[+] Switch a network between cooperative and non-cooperative without generating an entire new network
+    \item[-] Requires somewhat more work to keep the non-cooperative agents constant throughout the entire class
+    \item[-] Somewhat harder to extend to growing networks
+\end{itemize}
 
 \newpage
 
