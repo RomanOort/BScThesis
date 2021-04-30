@@ -161,7 +161,10 @@ Now, it is the case that the disproportional influence of groups can cause a net
 
 \subsubsection{Non-cooperative Agents}
 
-Another factor capable of preventing wisdom in a network is the presence of a non-cooperative agent in the network \cite{amir2021robust}. That is to say, an agent in the network who does not adhere to the regular updating mechanics, deliberately spreading misinformation to its neighbours. When a non-cooperative agent, or bot \cite{amir2021robust}, is present in the network instead of converging towards wisdom, in a network of sufficient size, the opinions of the agents will converge towards the opinion of the non-cooperative agent in the network. 
+Another factor capable of preventing wisdom in a network is the presence of a non-cooperative agent in the network \cite{amir2021robust}. That is to say, an agent in the network who does not adhere to the regular updating mechanics, deliberately spreading misinformation to its neighbours. The presence of even one of these non-cooperative agents in  the network is enough to prevent wisdom in the network, assuming the private belief of this agent is not equal to the assumed truth. Even though a network may satisfy all the necessary conditions required for wisdom this one agent not playing by the rules will steer the network away from the convergent belief. In fact, not only will this agent prevent the other agents from converging to the truth, it also ensures all other agents converge to its own belief.
+
+
+When a non-cooperative agent, or bot \cite{amir2021robust}, is present in the network instead of converging towards wisdom, in a network of sufficient size, the opinions of the agents will converge towards the opinion of the non-cooperative agent in the network. 
 
 \subsubsection{Structural Obstructions}
 
@@ -184,6 +187,13 @@ So, as there are structural obstructions to the wisdom of a society, so too are 
 \begin{equation}
     \sup_n \frac{\T_{B^c_n, B_n}(n)}{\T_{B_n, B^c_n}(n)} < \infty
 \end{equation}
+
+This notion captures the idea that a group cannot be too self-centered, that is to say, that it is influenced a disproportionately by agents outside said groups, while the group itself exerts very little influence on those agents. However this only needs to hold for groups smaller than indicated by the sequence $j(n) \to\infty$.
+This property is a natural extension of the idea that one single agent should not be getting infinitely more weight than they are placing on other agents, but applied to groups rather than individual agents. \newline
+
+However, balance alone is note enough to ensure a wise network. Another important, structural, measure is the minimal out-dispersion. This condition states that there exists some $q\in \mathbb{N}$ and $r > 0$, such that if $B_n$ is a finite group, $|B_n|\geq q$ and $\frac{|C_n|}{n}\to 1$, then $\textbf{T}_{B_n, C_n} > r$, as $n$ becomes sufficiently large. Simply put, this condition requires that any finite group of a give size must place a minimal amount of weight on a group consisting of nearly the entire network. This prevents specific groups from only focussing their attention inward and ignoring the vast majority of the network.
+
+With these two condition in place it is possible to formulate a sufficient condition for wisdom, namely, that if $\Soc$ satisfies \emph{both} balance and minimal out-dispersion, it is wise.
 
 \subsection{Variations}
 \subsubsection{$\varepsilon$-DeGroot}

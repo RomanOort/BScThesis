@@ -174,8 +174,6 @@ As can be seen in table \ref{table:exp_time}, which shows the elapsed time in ra
 Besides the exponentiation time the various generation times of the model were also taken into consideration, and can be seen in figures \ref{CPU:standard}, \ref{CPU:increased} and \ref{GPU:all}.
 In these figures it can be seen that, when generating networks with the standard, bare minimum, degree per agent, there is hardly any difference between the different generation methods. However, when the networks are generated with the increased degree it is clear that non-sparse, CPU generation is significantly faster than both GPU generation and sparse generation.
 
-\newpage
-
 \subsection{21/4/2021}
 
 The draw function has been altered to allow the size of the drawn network to go up to a thousand nodes. The previous limitation of a 100 nodes was set in place to prevent the visualization becoming too cluttered. However, to circumvent this issue the size of the plot is now determined dynamically, dependent on the size of the network shown. To grown along with the size of the plot the font-size is also determined dynamically. Below the visualization of networks of 400 and 1000 can be seen, in figure \ref{network_400:increased} and \ref{network_1000:increased} respectively.
@@ -241,23 +239,16 @@ Furthermore the lack off convergence to wisdom was also more carefully examined 
     x_{i, norm} = \frac{x_i - y_{min}}{y_{max} - y_{min}}
 \end{equation}
 Where $ y_{min}$ and $y_{max}$ are the lower and upper bound of the new interval respectively.
-However, as a consequence of this normalization the mean of the beliefs are shifted which in turn throws of the convergence, as the networks tend to convergence to the mean belief of the network, or at close to the mean. As can be seen in figure \ref{wisdom:nonorm} below.
-\newpage
-\begin{center}
-    \begin{figure}[!htbp]
-        \centering
-        \includegraphics[width=.7\textwidth]{ThesisKI/Images/WithoutNormalizedTruth.png}
-        \caption{Non-normalized truth, convergent belief}
-        \label{wisdom:nonorm}
-    \end{figure}
-\end{center}
 
-However, the solution to this issue seems to be normalize the assumed truth of the network over the same interval as the beliefs. As the mean of the, non-normalized, belief vector should approach the truth of the network, as this as used as the basis for the private signals at $t=0$, normalizing the assumed truth to the same interval should shift this over to remain the mean of the beliefs. Applying this normalization does seem to solve the lack of convergence as can be seen in figure \ref{wisdom:norm} below.
+\newpage
+
+However, as a consequence of this normalization the mean of the beliefs are shifted which in turn throws of the convergence, as the networks tend to convergence to the mean belief of the network, or at close to the mean.
+However, the solution to this issue seems to be normalize the assumed truth of the network over the same interval as the beliefs. As the mean of the, non-normalized, belief vector should approach the truth of the network, as this as used as the basis for the private signals at $t=0$, normalizing the assumed truth to the same interval should shift this over to remain the mean of the beliefs. Applying this normalization does seem to solve the lack of convergence as can be seen in figure \ref{wisdom:norm} below, which shows both the normalized truth and the original truth to show to the improved convergence.
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=.7\textwidth]{ThesisKI/Images/WithNormalizedTruth.png}
-        \caption{Normalized truth, convergent belief}
+        \includegraphics[width=.7\textwidth]{ThesisKI/Images/WisdomConvergenceBoth.png}
+        \caption{Belief convergence}
         \label{wisdom:norm}
     \end{figure}
 \end{center}
@@ -294,7 +285,8 @@ Started examining different ways to implement non-cooperative agents in the netw
 \newpage
 
 \subsubsection*{Added after generation}
-\begin{itemize}
+To implement this variation a new row and column would be added to the network. The row would contain only zeroes, except on the diagonal, as the non-cooperative agent listens to no other agents opinion. The column would contain ones to indicate that other agents \emph{do} listen to this non-cooperative agent. These two would then be stacked to the network to grow it.
+\begin{itemize} 
     \item[+] Presence in every network can be guaranteed
     \item[+] Always final entries in network
     \item[+] Requires no modification of current network generation method
@@ -304,8 +296,33 @@ Started examining different ways to implement non-cooperative agents in the netw
     \item[-] Somewhat harder to extend to growing networks
 \end{itemize}
 
+Finally the second method was chosen as this would be able to provide more flexibility without the need to rework already existing functions. Furthermore it also allows to switch a network between cooperative and non-cooperative mode, without the need to change generate an entirely new network. \newline
+
+A function was created to extend an existing network to receive a non-cooperative agent, as described earlier. The belief of this agent would then be determined in the same manner as the beliefs of the agents, by adding a random noise term to the assumed truth of the world.
+
+However this function needs to be adjusted, as, in its current form, it does not work with simulating the growing of the network, which is done by taking increasing slices of the interaction matrix. Currently, however, the non-cooperative agent is added to the edges of the function allowing and will therefore not be taken into consideration when taking subsets of the network.
+
+\subsection{29/4/2021}
+
+The function to add non-cooperative agents to the network was updated. The old version added the non-cooperative agents as the final agents in the existing network, however, when a network of a smaller size it looked at the non-cooperative agents are not taken into account. To resolve this issue the function that generates the non-cooperative agents no longer adjusts the entire network, but rather, it returns a list with the agents will listen to the non-cooperative agent. This way the non-cooperative agent can be added to a network of any given size, taking care to use those indeces that are actually present in the network at that size.
+
+While this method ensures the existence of a non-cooperative agent in a network of the given size, it does not guarantee the existence of links towards agents in this network. To ensure the non-cooperative agents do have links, they are guaranteed to have at least one link with one of the first five agents in the network.
+
+The same adjustment was applied to the generation of the beliefs of the non-cooperative agents. Where first the beliefs were immediately added to the belief vector, now only the beliefs of the non-cooperative agents are returned instead of stacking those beliefs on the already existing belief vector.
+
+The visualization function has also been updated to be able to account for the presence of non-cooperative agents. To do this the function is able to switch the given network between cooperative and non-cooperative mode using a widget. Another labelling of the nodes was added, which labels the non-cooperative agents in red and all regular agents in blue.
+Furthermore the undirected networks are generated as directed graphs, to account for the one-directional links of the non-cooperative agents, however, the arrows in this graph are not shown to indicate it is undirected. 
+
+Finally the layout of the widgets of the visualization function was updated to a cleaner look.
+
+\subsection{30/4/2021}
+
+A function was added that compares the convergence of a network with \emph{two} non-cooperative agents, in an attempt to analyze the convergence of a network with non-cooperative agents present.
+
 \newpage
 
+
+\end{document}
 \section{Remaining Figures}
 
 \subsection{10/4/2021}
@@ -384,15 +401,7 @@ Started examining different ways to implement non-cooperative agents in the netw
     \end{figure}
 \end{center}
 \newpage
-\subsection{13/4/2021}
-\begin{center}
-    \begin{figure}[!htbp]
-        \centering
-        \includegraphics[width=1.3\textwidth]{ThesisKI/Images/DegreeGraph.png}
-        \caption{Graph representation of network}
-        \label{graph:degree}
-    \end{figure}
-\end{center}
+ 
 
 \subsection{20/4/2021}
 \begin{center}
@@ -421,5 +430,3 @@ Started examining different ways to implement non-cooperative agents in the netw
         \label{GPU:all}
     \end{figure}
 \end{center}
-
-\end{document}
