@@ -317,7 +317,22 @@ Finally the layout of the widgets of the visualization function was updated to a
 
 \subsection{30/4/2021}
 
-A function was added that compares the convergence of a network with \emph{two} non-cooperative agents, in an attempt to analyze the convergence of a network with non-cooperative agents present.
+First the convergence of a network with one non-cooperative agent was examined, to determine whether this network behaved as was expected. That is to say, whether the network converges towards the opinion of the non-cooperative agent, rather than the truth of the network. As expected a network with one non-convergent agent does indeed converge towards the opinion of the non-cooperative agent. However, the convergence does seem to occur considerably slower that it would normally, were the entirety of the network cooperative. Furthermore it appears as the network initially does appear to converge towards the mean of beliefs of the network, which in the long term does become the assumed truth, before veering off towards the opinion of the non-cooperative agent. However, more examination is required to confirm, or refute, this suspicion. Additionally, it appears to be the case, with only only one non-cooperative agent present in the network, that the convergent belief can still be computed using the influence vector $s$.
+Finally, the intuition behind the converge towards the belief of the non-cooperative agent was discovered.: the interaction matrices of the network are row-stochastic, meaning that the rows sum to one. However, as the non-cooperative rows contain only a self-link they will remain one. This means that when performing matrix multiplication the entries that specify interaction with the non-cooperative value will be multiplied by one, and then also be summed with the other multiplications of the other entries. This will result in those entries only increasing, until they become equal to one. \newline
+
+After the initial analysis of a network with only one non-cooperative agent, some time was spent examining whether a network containing \emph{two} non-cooperative agents converges, and if so, to what value. After running test it seems that a network containing two non-cooperative does indeed converge, however, it is not a uniform convergence, as is the case with a cooperative networks, or networks with only one non-cooperative agent. That is to say, when these other two networks converge the rows of the matrix at the time of convergence are identical: every rows contains the exact same entries. As a consequence such networks will also converge towards a common belief, after all, if all rows are the same than a matrix multiplication with the belief vector should result in the same outcomes. On the other hand, a network with two, (more than one?), non-cooperative agents has a non-uniform matrix at the time of convergent. More specifically, following the same intuition as with a single non-cooperative agent, the weights on all cooperative agents will tend to 0. The weights on the non-cooperative agents, however, will differ between each cooperative agent.
+As a consequence, there is not one single convergent belief in the network. However, it can be determined that the mean of the belief vector, at the time of convergence, is equal to the weighted average of the beliefs of the two non-cooperative agents. Here the weights placed on each belief are simply the average of the weights placed on each non-cooperative agents by the cooperative agents. These observations can be seen in figure \ref{non-coop:double}, where the convergent belief of the network overlaps perfectly with the average belief, weighted as previously described, of the non-cooperative agents. 
+
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/double_non_coop_convergence.png}
+        \caption{Convergence, 2 non-coop agents}
+        \label{non-coop:double}
+    \end{figure}
+\end{center}
+
+Further investigation is required to examine whether this relation holds for higher numbers of non-cooperative agents. If so this would imply that, as the the number of non-cooperative agents, $k \to \infty$, wisdom would once again be achieved, assuming individual weights would become negligible as $k \to \infty$.
 
 \newpage
 
