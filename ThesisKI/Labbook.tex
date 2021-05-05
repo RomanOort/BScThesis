@@ -338,7 +338,30 @@ Further investigation is required to examine whether this relation holds for hig
 
 \subsection{1/5/2021}
 
-In order to inspect the connection between the convergent matrix of a network with more than one non-cooperative agent a function was created that aims to plot the connection between the degree separation, the amount of links required to get from agent $i$ to agent $j$, and the final weight placed on the non-cooperative agents.
+In order to inspect the connection between the convergent matrix of a network with more than one non-cooperative agent a function was created that aims to plot the connection between the degree separation, the amount of links required to get from agent $i$ to agent $j$, and the weights placed on the non-cooperative agents at the time of convergence.
+In order to show this connection, if there is one, a figure is created containing one subplot for every non-cooperative agent. Each subplot is barplot, where one bar corresponds to one agent. Per agent the degree separation between the non-cooperative agent of the subplot and that specific cooperative agent is shown, combined with the weight that agent places on the non-cooperative agent, at the time of convergence, on a separate axis.
+
+To get the degree separation between two agents the DeGroot process is simply simulated, and at every step the columns of the non-cooperative agents are checked to see which agents are newly connected to the non-cooperative agent.
+
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=\textwidth]{ThesisKI/Images/SepWeight4.png}
+        \caption{Degree separation and weight, 4 non-coop agents}
+        \label{degree_sep_weight:4}
+    \end{figure}
+\end{center}
+
+As can be seen in figure \ref{degree_sep_weight:4} above there does appear to be a connection between degree separation of a non-cooperative agent and a regular agent: the higher the degree separation, the lower the weight placed on the non-cooperative agent. However, degree separation alone is not enough to explain the weight placed on a non-cooperative agent, as non-cooperative agents with the same degree separation to a specific agent can still be assigned different weight by said agent.
+
+\section{Week 6}
+
+\subsection{3/5/2020}
+The function that creates the plots for the comparison between degree separation has been optimized. This was done first by removing the loop for convergence outside of the looping over the agents, as the network had to be converged only once. It was further optimized by removing the loop for the agents alltogether, and instead making use of the np.where function in combination with column slicing and some matrix operations.
+
+\subsection{5/5/2020}
+A function was added that plots the converge of a network in both the cooperative and non-cooperative case. It uses the same code as the function that plots the converge of a single network.
+
 
 
 \end{document}
