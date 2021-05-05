@@ -354,6 +354,15 @@ To get the degree separation between two agents the DeGroot process is simply si
 
 As can be seen in figure \ref{degree_sep_weight:4} above there does appear to be a connection between degree separation of a non-cooperative agent and a regular agent: the higher the degree separation, the lower the weight placed on the non-cooperative agent. However, degree separation alone is not enough to explain the weight placed on a non-cooperative agent, as non-cooperative agents with the same degree separation to a specific agent can still be assigned different weight by said agent.
 
+\section{Week 6}
+
+\subsection{3/5/2020}
+The function that creates the plots for the comparison between degree separation has been optimized. This was done first by removing the loop for convergence outside of the looping over the agents, as the network had to be converged only once. It was further optimized by removing the loop for the agents alltogether, and instead making use of the np.where function in combination with column slicing and some matrix operations.
+
+\subsection{5/5/2020}
+A function was added that plots the converge of a network in both the cooperative and non-cooperative case. It uses the same code as the function that plots the converge of a single network.
+
+
 
 \end{document}
 \section{Remaining Figures}
