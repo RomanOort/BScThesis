@@ -65,16 +65,24 @@ As mentioned the chosen method has the option to adjust the generation process a
 First of all, this method allows for the generation of both directed and undirected networks. The method for generating undirected networks is very similar to the generation of directed networks. In fact, the process is entirely the same, save for one detail. In contrast to the generation of a directed network, where the agents to receive and send a link are chosen independently, and therefore tend to be distinct agents, the generation of an undirected network simply chooses one random agent to both receive and send a link. After all, the only difference between the interaction matrix $\T$ of a directed and undirected network is that the matrix of an undirected is symmetrical, whereas the matrix of an undirected network is asymmetrical. \newline
 Furthermore, when a directed network is created it can be made into an undirected network. This can be done in one of three different ways. The first method is to duplicate all links, both the incoming and outgoing. This is done by simply taking the element wise maximum of the original matrix and its transpose, which effectively mirrors all links in the matrix along the diagonal. \newline
 
-Secondly, the function also allows the choice of increasing the degree of each agent. The default generation guarantees each agent no more than one incoming and outgoing link
+Secondly, the function also allows the choice of increasing the degree of each agent. The default generation guarantees each agent no more than one incoming and outgoing link. As this is sufficient to ensure connectedness, it does tend towards a lower amount of links per agent as shown in figure \ref{deg:std}, which shows the degree distribution of an undirected network, using the default generation. Furthermore the distribution has a sharp peak at the lower degrees, which quickly dissipates as the degree increases. In comparison, the degree distribution when using this increased degree becomes more spread out, over a wider range of degrees, and is flattened more.
 
-\begin{figure}[!tbp]
+\begin{figure}[!htbp]
   \centering
-  \subfloat[Flower one.]{\includegraphics[width=0.4\textwidth]{ThesisKI/Images/De}\label{fig:f1}}
+  \subfloat[Standard Degree]{\includegraphics[width=0.5\textwidth]{ThesisKI/Images/DegreeUndirectedStandard.png}\label{deg:std}}
   \hfill
-  \subfloat[Flower two.]{\includegraphics[width=0.4\textwidth]{flower2.jpg}\label{fig:f2}}
-  \caption{My flowers.}
+  \subfloat[Increased Degree]{\includegraphics[width=0.5\textwidth]{ThesisKI/Images/DegreeUndirectedIncreased.png}\label{deg:inc}}
+  \caption{Degree Distributions}
 \end{figure}
 
+\newpage
+
+The implementation of this increased degree is rolled into the generation of the network to roll this functionality into the iteration of the generation function, preventing the need to repeat this iteration if the degree would be increased after the generation. After the guaranteed connections each agent then gets assigned an additional degree, which is a random number sampled from a given probability distribution, by default $\mathcal{N}(2,1)$. This number is rounded to the nearest integer. Subsequently, this amount of agents are down randomly from the set of \emph{all} agents in the network, and a link is created for those agents. When generating a directed network this procedure, including a random additional degree, occurs twice, once for the incoming degree, once for the outgoing degree. However, for an undirected network this procedure only needs to be executed once, and the chosen agents are used for both the incoming and outgoing link. \newline
+The generation of this additional degree can customized further by providing a different probability function and the corresponding parameters. This allows for the degree to be increased as much as desired, using any probability distribution.\newline
+
+Finally, the probability for self-links in the network can be set as desired. To guarantee that each agent in the network has a self-link this parameter can be set to 1 and, conversely, to ensure no agent \footnote{Except for the first agent, which always receives a self-link to ensure aperiodicity} has a self-link this parameter can simply be set to 0. Any value in between gives each agent that probability to have a self-link.
+
+\subsubsection{Sparse Matrices}
 
 \subsection{Fixed Generation}
 
