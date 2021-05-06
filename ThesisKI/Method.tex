@@ -10,6 +10,8 @@
 \usepackage{amssymb}
 \usepackage{systeme}
 \usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{subfig}
 
 \title{Method}
 \author{Roman Oort}
@@ -41,24 +43,38 @@ To start, an empty $n\times n$ array , i.e. containing solely zeroes, is created
 Subsequently the function iterates over a list containing all integers from zero, up to, but not including, $n$, which will be used to index the matrix. \newline
 In this iteration there is one special case, namely, the very first agent. One of the properties equivalent to convergence, as discussed in section [REF], is aperiodicity, which requires that the greatest common divisor of \emph{all} cycles in the network can be no larger than 1. To ensure aperiodicity, and therefore convergence, the very first agent is guaranteed to receive a self-link. This ensures aperiodicity as this creates a cycle with length 1, ensuring there can be no greater common divisor along all cycles. After the creation of this self-link the next iteration starts. \newline
 
-Every subsequent agent will be guaranteed to both receive, and send, one outgoing link, which will be identical when generating an undirected network as links work both ways. This guarantees that the network of size $n$ will be fully connected. However, as we are interested in sequences of networks, all of which need to be convergent, this condition need not only be satisfied by the network of size $n$, but also for all $n^{\prime} < n$. Therefore, these guaranteed links will be sent to, and by, an earlier agent in the network, e.g.: the guaranteed links of an agent $k$ can only be sent to and received by any agent $m < k$. This guarantees the strong connectedness of the network, at every size, which can be proven inductively [REF]. This also holds for an undirected network, where the only difference is that the agents receiving and sending a link are one and the same. Which specific agents will receive a link are chosen randomly from a discrete uniform distribution ranging over the previously mentioned interval. \newline 
+Every subsequent agent will be guaranteed to both receive, and send, one outgoing link, which will be identical when generating an undirected network as links work both ways. This guarantees that the network of size $n$ will be fully connected. However, as we are interested in sequences of networks, all of which need to be convergent, this condition need not only be satisfied by the network of size $n$, but also for all $n^{\prime} < n$. Therefore, these guaranteed links will be sent to, and by, an earlier agent in the network, e.g.: the guaranteed links of an agent $k$ can only be sent to and received by any agent $m < k$. This guarantees the strong connectedness of the network, at every size, which can be proven inductively [REF]. This also holds for an undirected network, where the only difference is that the agents receiving and sending a link are one and the same. Which specific agents will receive a link are chosen randomly from a discrete uniform distribution ranging over the previously mentioned interval. \newpage 
 
-An alternative, and at first glance faster, approach could have been to not generate the network empty, but fill it with values sampled from some random distribution, normalized to be on the interval $[0, 1]$. Rounding these values to the nearest integer would similarly result in a matrix of 1's and 0'to indicate links, or a lack thereof. As this would not require iteration over the individual iteration this seems a faster approach at first glance. However, it has several severe downsides compared to the chosen method. First, a great deal of control over the generation is lost, losing the guarantee of connectedness as a consequence. Checking whether the network is connected, and remains so at every size, would then still require the very iteration whose removal would be the cause of the potential speed-up, negating this benefit altogether. Furthermore, besides the aforementioned guarantee of connectedness, the chosen method also has another distinct, but more subtle benefit. As new agents in the network are sure to receive and send a link to agents in the network before them, this lends a natural bias towards the older agents in the network to be more connected in the network than new agents. This is similar to the natural evolution of groups, where those who have been part of said group for longer tend to have more connections than those who are new in the group.
+An alternative, and at first glance faster, approach could have been to not generate the network empty, but fill it with values sampled from some random distribution, normalized to be on the interval $[0, 1]$. Rounding these values to the nearest integer would similarly result in a matrix of 1's and 0'to indicate links, or a lack thereof. As this would not require iteration over the individual agents this seems a faster approach at first. However, a great deal of control over the generation is relinquished, losing the guarantee of connectedness as a consequence. Checking whether the network is connected at every size, and making it so if it is not, would then still require the very iteration whose removal would be the cause of the potential speed-up, negating this benefit altogether. Furthermore, besides the aforementioned guarantee of connectedness, the chosen method also has another distinct, but more subtle benefit. As new agents in the network are sure to receive and send a link to agents in the network before them, this lends a natural bias towards the older agents in the network to be more connected than newer agents. This is similar to the natural evolution of groups, where those who have been part of said group for a longer time tend to have more connections than those who are new in the group. This effect can be seen in figure \ref{degree:agent} below.
 
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=.8\textwidth]{ThesisKI/Images/Directed.png}
-        \caption{Degree Distribution Directed Network}
-        \label{degree:instant}
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/DirectedStandardPerAgent.png}
+        \caption{Average Directed Degree}
+        \label{degree:agent}
     \end{figure}
 \end{center}
 
-The benefit of this method is twofold: first, as mentioned, it guarantees connectedness at every size of the network, which effectively results in the generation of a sequence of connected, convergent, networks, not only a single one, and second, this method of generation leads towards a natural bias towards the agents present early in the network.\newline
+\noindent In this figure each bin represent the average degree over 100 agents, in order. It is clear that the earlier agents in the network tend to have a higher degree then later agents in the network, simulating this natural behaviour in the evolution of social groups. This benefit is lost when using the alternative method as there are no guaranteed links to earlier agents, removing this implicit bias.
 
+\subsubsection{Customization}
 
-\newline
-Another possible approach would have been to generate an $n \times n$ matrix filled with random numbers sampled from a uniform distribution over the interval $[0, 1]$, and round those values to the nearest integer to fill the matrix with 0's or 1's to indicate links. However, generating this network entirely randomly relinquishes a great amount of control that is desirable, and is not guaranteed to be faster as this could
+As mentioned the chosen method has the option to adjust the generation process as desired. These adjustment are applied complementary to the default generation, to ensure the base guarantees of this method. \newline
+
+First of all, this method allows for the generation of both directed and undirected networks. The method for generating undirected networks is very similar to the generation of directed networks. In fact, the process is entirely the same, save for one detail. In contrast to the generation of a directed network, where the agents to receive and send a link are chosen independently, and therefore tend to be distinct agents, the generation of an undirected network simply chooses one random agent to both receive and send a link. After all, the only difference between the interaction matrix $\T$ of a directed and undirected network is that the matrix of an undirected is symmetrical, whereas the matrix of an undirected network is asymmetrical. \newline
+Furthermore, when a directed network is created it can be made into an undirected network. This can be done in one of three different ways. The first method is to duplicate all links, both the incoming and outgoing. This is done by simply taking the element wise maximum of the original matrix and its transpose, which effectively mirrors all links in the matrix along the diagonal. \newline
+
+Secondly, the function also allows the choice of increasing the degree of each agent. The default generation guarantees each agent no more than one incoming and outgoing link
+
+\begin{figure}[!tbp]
+  \centering
+  \subfloat[Flower one.]{\includegraphics[width=0.4\textwidth]{ThesisKI/Images/De}\label{fig:f1}}
+  \hfill
+  \subfloat[Flower two.]{\includegraphics[width=0.4\textwidth]{flower2.jpg}\label{fig:f2}}
+  \caption{My flowers.}
+\end{figure}
+
 
 \subsection{Fixed Generation}
 
