@@ -1,0 +1,82 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{textcomp}
+\usepackage{eurosym}
+\usepackage{amssymb}
+\usepackage{systeme}
+\usepackage{mathtools}
+
+\title{Method}
+\author{Roman Oort}
+\date{\today}
+
+%%% PERSONAL SHORTCUTS
+\DeclareMathOperator*{\plim}{plim}
+\newcommand{\T}{\textbf{T}}
+\newcommand{\Tij}{\textbf{T}_{ij}}
+\newcommand{\Soc}{(\T(n))^{\infty}_{n=1}}
+\newcommand{\beli}[3][2]{p_{#2}^{(#3)}}
+\newcommand{\belvec}[2]{\textbf{p}^{(#2)}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+\section{Network Generation}
+
+\subsection{Random Generation}
+
+In order to allow for proper analysis of the DeGroot mechanics a method to generate \emph{random} networks was created, to ensure generality of the obtained results. Given a number of agents this methods is capable of generating both directed and undirected networks, and accepts several other parameters to guide the generation in the desired directions.
+
+\subsubsection{Default Case}
+In the default, most basic, case this function simply takes the number of agents, $n$ as input. Other, optional, parameters can be provided to customize the desired network and will be considered in detail at the relevant time.
+To start, an empty $n\times n$ array , i.e. containing solely zeroes, is created, which serves as a blank slate for the interaction matrix $\T$ of the network, which is all that is required to describe a network as discussed in [REF].
+Subsequently the function iterates over a list containing all integers from zero, up to, but not including, $n$, which will be used to index the matrix. \newline
+In this iteration there is one special case, namely, the very first agent. One of the properties equivalent to convergence, as discussed in section [REF], is aperiodicity, which requires that the greatest common divisor of \emph{all} cycles in the network can be no larger than 1. To ensure aperiodicity, and therefore convergence, the very first agent is guaranteed to receive a self-link. This ensures aperiodicity as this creates a cycle with length 1, ensuring there can be no greater common divisor along all cycles. After the creation of this self-link the next iteration starts. \newline
+
+Every subsequent agent will be guaranteed to both receive, and send, one outgoing link, which will be identical when generating an undirected network as links work both ways. This guarantees that the network of size $n$ will be fully connected. However, as we are interested in sequences of networks, all of which need to be convergent, this condition need not only be satisfied by the network of size $n$, but also for all $n^{\prime} < n$. Therefore, these guaranteed links will be sent to, and by, an earlier agent in the network, e.g.: the guaranteed links of an agent $k$ can only be sent to and received by any agent $m < k$. This guarantees the strong connectedness of the network, at every size, which can be proven inductively [REF]. This also holds for an undirected network, where the only difference is that the agents receiving and sending a link are one and the same. Which specific agents will receive a link are chosen randomly from a discrete uniform distribution ranging over the previously mentioned interval. \newline 
+
+An alternative, and at first glance faster, approach could have been to not generate the network empty, but fill it with values sampled from some random distribution, normalized to be on the interval $[0, 1]$. Rounding these values to the nearest integer would similarly result in a matrix of 1's and 0'to indicate links, or a lack thereof. As this would not require iteration over the individual iteration this seems a faster approach at first glance. However, it has several severe downsides compared to the chosen method. First, a great deal of control over the generation is lost, losing the guarantee of connectedness as a consequence. Checking whether the network is connected, and remains so at every size, would then still require the very iteration whose removal would be the cause of the potential speed-up, negating this benefit altogether. Furthermore, besides the aforementioned guarantee of connectedness, the chosen method also has another distinct, but more subtle benefit. As new agents in the network are sure to receive and send a link to agents in the network before them, this lends a natural bias towards the older agents in the network to be more connected in the network than new agents. This is similar to the natural evolution of groups, where those who have been part of said group for longer tend to have more connections than those who are new in the group.
+
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/Directed.png}
+        \caption{Degree Distribution Directed Network}
+        \label{degree:instant}
+    \end{figure}
+\end{center}
+
+The benefit of this method is twofold: first, as mentioned, it guarantees connectedness at every size of the network, which effectively results in the generation of a sequence of connected, convergent, networks, not only a single one, and second, this method of generation leads towards a natural bias towards the agents present early in the network.\newline
+
+
+\newline
+Another possible approach would have been to generate an $n \times n$ matrix filled with random numbers sampled from a uniform distribution over the interval $[0, 1]$, and round those values to the nearest integer to fill the matrix with 0's or 1's to indicate links. However, generating this network entirely randomly relinquishes a great amount of control that is desirable, and is not guaranteed to be faster as this could
+
+\subsection{Fixed Generation}
+
+\section{Belief Initialization}
+
+\section{Weight Initialization}
+\subsection{Uniform}
+\subsection{Overlap}
+\subsection{Belief}
+\subsection{Random}
+
+\section{Non-cooperative Agents}
+
+\section{Updating Rules}
+\newpage
+\section{Appendix}
+\subsection{Proof of (strong) connectedness}
+Let a network of containing 1 agent be our base case. This network is guaranteed to be fully connected, as the first agent is guaranteed to receive a self-link. Then assuming that we have an arbitrary network of size $n$, generated using the aforementioned method, that is strongly connected, when this network is extended to the size $n+1$, using the same method, it will also be strongly connected. Let $i$ be the $n+1$'th agent, that is to say, the agent added to the network to increase it in size. As the network is grown using the aforementioned method $i$ is guaranteed to have an incoming and outgoing link to the arbitrary agents $j < n+1$ and $k < n+1$. As $j < n+1$ and $k < n+1$ it follows naturally that $j, k \in \{1, ... n\}$, and are therefore agents in the network of size $n$. However, the network of size $n$ is strongly connected, so therefore there must exist some path to and from $j$ to and from any other agent in the network, as is the case for $k$. Therefore if $i$ has a link to both $j$ and $k$ there must also be a path to and from $i$ to and from every other agent in the network. Furthermore, as $j$ and $k$ were arbitrary, this holds for every agent $i$ is guaranteed to have a link with. Therefore the network of size $n+1$ is guaranteed to be strongly connected, if the aforementioned method of generation is used.\newline
+
+\newpage
+\end{document}
