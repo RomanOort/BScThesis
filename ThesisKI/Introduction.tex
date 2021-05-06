@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{textcomp}
+\usepackage{eurosym}
+\usepackage{amssymb}
+\usepackage{systeme}
+\usepackage{mathtools}
+
+\title{Introduction}
+\author{Roman Oort}
+\date{\today}
+
+%%% PERSONAL SHORTCUTS
+\DeclareMathOperator*{\plim}{plim}
+\newcommand{\T}{\textbf{T}}
+\newcommand{\Tij}{\textbf{T}_{ij}}
+\newcommand{\Soc}{(\T(n))^{\infty}_{n=1}}
+\newcommand{\beli}[3][2]{p_{#2}^{(#3)}}
+\newcommand{\belvec}[2]{\textbf{p}^{(#2)}}
+
+\begin{document}
+
+\maketitle
+
+The field of social learning concerns itself with modelling interactions in groups, and how this interaction can dictate the flow of information in this group. As people interact with others on a day-to-day basis they get exposed to new information, and incorporate this new information into their worldview, allowing it to change their behaviour and their beliefs. Within the field of social learning many models have been made in order to formalize these interactions and changing beliefs \cite{golub2017learning}, one of the most prominent being the DeGroot model \cite{degroot1974concensus}.
+This model shows that as time progresses in a network while agents keep exchanging information with each other, the opinions of all the agents in such a network converge to a single opinion, identical for all involved agents. What's more, as these network increase in size this convergent opinion, held by every single agent, approaches the given truth of a model. This effectively means that once social networks become sufficiently large, as long as information can flow freely through the network, that over time each agent will believe the truth.
+
+\bibliographystyle{apalike}
+\bibliography{references.bib}
+
+\end{document}
