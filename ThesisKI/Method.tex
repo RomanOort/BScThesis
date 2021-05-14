@@ -14,6 +14,7 @@
 \usepackage{subfig}
 \usepackage[bottom]{footmisc}
 \usepackage{mwe}
+\usepackage{csquotes}
 
 \title{Method}
 \author{Roman Oort}
@@ -36,18 +37,20 @@
 \section{Network Generation}
 
 \subsection{Random Generation}
-
-In order to allow for proper analysis of the DeGroot mechanics a method to generate \emph{random} networks was created, to ensure generality of the obtained results. Given a number of agents this methods is capable of generating both directed and undirected networks, and accepts several other parameters to guide the generation in the desired directions.
+\label{generation:random}
+In order to allow for proper analysis of the DeGroot mechanics a method to generate \emph{random} networks was created, to ensure generality of the obtained results. Given a number of agents this method is capable of generating both directed and undirected networks, and accepts several other parameters to guide the generation in the desired directions.
 
 \subsubsection{Default Case}
-In the default, most basic, case this function simply takes the number of agents, $n$ as input. Other, optional, parameters can be provided to customize the desired network and will be considered in detail at the relevant time.
+In the default, most basic, case this function simply takes the desired number of agents, $n$ as input. Other, optional, parameters can be provided to customize the desired network and will be discussed in detail at the relevant time.
 To start, an empty $n\times n$ array \cite{2020NumPy-Array}, i.e. containing solely zeroes, is created, which serves as a blank slate for the interaction matrix $\T$ of the network, which is all that is required to describe a network as discussed in [REF].
 Subsequently the function iterates over a list containing all integers from zero, up to, but not including, $n$, which will be used to index the matrix. \newline
-In this iteration there is one special case, namely, the very first agent. One of the properties equivalent to convergence, as discussed in section [REF], is aperiodicity, which requires that the greatest common divisor of \emph{all} cycles in the network can be no larger than 1. To ensure aperiodicity, and therefore convergence, the very first agent is guaranteed to receive a self-link. This ensures aperiodicity as this creates a cycle with length 1, ensuring there can be no greater common divisor along all cycles. After the creation of this self-link the next iteration starts. \newline
+In this iteration there is one special case, namely, the very first agent. One of the properties equivalent to convergence, as discussed in section [REF], is aperiodicity, which requires that the greatest common divisor of \emph{all} cycles in the network can be no larger than 1. To ensure aperiodicity, and therefore convergence, the very first agent is guaranteed to receive a self-link. This ensures aperiodicity as this creates a cycle with length 1, ensuring there can be no greater common divisor among all cycles. After the creation of this self-link the next iteration starts. \newline
 
-Every subsequent agent will be guaranteed to both receive, and send, one outgoing link, which will be identical when generating an undirected network as links work both ways. This guarantees that the network of size $n$ will be fully connected. However, as we are interested in sequences of networks, all of which need to be convergent, this condition need not only be satisfied by the network of size $n$, but also for all $n^{\prime} < n$. Therefore, these guaranteed links will be sent to, and by, an earlier agent in the network, e.g.: the guaranteed links of an agent $k$ can only be sent to and received by any agent $m < k$. This guarantees the strong connectedness of the network, at every size, which can be proven inductively [REF]. This also holds for an undirected network, where the only difference is that the agents receiving and sending a link are one and the same. Which specific agents will receive a link are chosen randomly from a discrete uniform distribution ranging over the previously mentioned interval. \newpage 
+Every subsequent agent will be guaranteed to both receive, and send, one outgoing link, which will be identical when generating an undirected network as links work both ways. This guarantees that the network of size $n$ will be fully connected. However, as we are interested in sequences of networks, all of which need to be convergent, this condition need not only be satisfied by the network of size $n$, but also for all $n^{\prime} < n$. Therefore, these guaranteed links will be sent to, and by, an earlier agent in the network, e.g.: the guaranteed links of an agent $k$ can only be sent to and received by any agent $m < k$. This guarantees the strong connectedness of the network, at every size, which can be proven inductively [REF]. This also holds for an undirected network, where the only difference is that the agents receiving and sending a link are one and the same. Which specific agents will receive a link are chosen randomly from a discrete uniform distribution ranging over the previously mentioned interval. \newline
 
-An alternative, and at first glance faster, approach could have been to not generate the network empty, but fill it with values sampled from some random distribution, normalized to be on the interval $[0, 1]$. Rounding these values to the nearest integer would similarly result in a matrix of 1's and 0'to indicate links, or a lack thereof. As this would not require iteration over the individual agents this seems a faster approach at first. However, a great deal of control over the generation is relinquished, losing the guarantee of connectedness as a consequence. Checking whether the network is connected at every size, and making it so if it is not, would then still require the very iteration whose removal would be the cause of the potential speed-up, negating this benefit altogether. Furthermore, besides the aforementioned guarantee of connectedness, the chosen method also has another distinct, but more subtle benefit. As new agents in the network are sure to receive and se\belvecnd a link to agents in the network before them, this lends a natural bias towards the older agents in the network to be more connected than newer agents. This is similar to the natural evolution of groups, where those who have been part of said group for a longer time tend to have more connections than those who are new in the group. This effect can be seen in figure \ref{degree:agent} below.
+Therefore, as this method of generation not only guarantees connectedness in the total network, but also at every smaller size of the network, this returned network can also be considered a sequence of networks. To access a network of a specific size in this sequence, one would only need to take the rows and columns up to that size to obtain the specific network. This ensures that the network and its links stay constant between sizes, allowing for proper comparison of different networks in the sequence. Finally, this function is also capable of growing an existing network: when a matrix and a positive integer $m$ are provided, the function will grow this existing matrix by adding $m$ rows and columns, filled with links in the same manner as described earlier.\newline
+
+An alternative, and at first glance faster, approach could have been to not generate the network empty, but fill it with values sampled from some random distribution, normalized to be on the interval $[0, 1]$. Rounding these values to the nearest integer would similarly result in a matrix of 1's and 0'to indicate links, or a lack thereof. As this would not require iteration over the individual agents this seems a faster approach at first. However, a great deal of control over the generation is relinquished, losing the guarantee of connectedness as a consequence. Checking whether the network is connected at every size, and making it so if it is not, would then still require the very iteration whose removal would be the cause of the potential speed-up, negating this benefit altogether. Furthermore, besides the aforementioned guarantee of connectedness, the chosen method also has another distinct, but more subtle benefit. As new agents in the network are sure to receive and send a link to agents in the network before them, this lends a natural bias towards the older agents in the network to be more connected than newer agents. This is similar to the natural evolution of groups, where those who have been part of said group for a longer time tend to have more connections than those who are new in the group. This effect can be seen in figure \ref{degree:agent} below.
 
 \begin{center}
     \begin{figure}[!htbp]
@@ -62,10 +65,10 @@ An alternative, and at first glance faster, approach could have been to not gene
 
 \subsubsection{Customization}
 
-As mentioned the chosen method has the option to adjust the generation process as desired. These adjustment are applied complementary to the default generation, to ensure the base guarantees of this method. \newline
+As mentioned the chosen implementation has the option to adjust the generation process as desired. These adjustment are applied complementary to the default generation, to ensure the base guarantees of this method. \newline
 
 First of all, this method allows for the generation of both directed and undirected networks. The method for generating undirected networks is very similar to the generation of directed networks. In fact, the process is entirely the same, save for one detail. In contrast to the generation of a directed network, where the agents to receive and send a link are chosen independently, and therefore tend to be distinct agents, the generation of an undirected network simply chooses one random agent to both receive and send a link. After all, the only difference between the interaction matrix $\T$ of a directed and undirected network is that the matrix of an undirected is symmetrical, whereas the matrix of an undirected network is asymmetrical. \newline
-Furthermore, when a directed network is created it can be made into an undirected network. This can be done in one of three different ways. The first method is to duplicate all links, both the incoming and outgoing. This is done by simply taking the element wise maximum of the original matrix and its transpose, which effectively mirrors all links in the matrix along the diagonal. \newline
+Furthermore, when a directed network is created it can be made into an undirected network. This is done by simply taking the element wise maximum of the original matrix and its transpose, which effectively mirrors all links in the matrix along the diagonal. \newline
 
 Secondly, the function also allows the choice of increasing the degree of each agent. The default generation guarantees each agent no more than one incoming and outgoing link. As this is sufficient to ensure connectedness, it does tend towards a lower amount of links per agent as shown in figure \ref{deg:std}, which shows the degree distribution of an undirected network, using the default generation. Furthermore the distribution has a sharp peak at the lower degrees, which quickly dissipates as the degree increases. In comparison, the degree distribution when using this increased degree becomes more spread out, over a wider range of degrees, and is flattened more.
 
@@ -79,18 +82,20 @@ Secondly, the function also allows the choice of increasing the degree of each a
 
 \newpage
 
-The implementation of this increased degree is rolled into the generation of the network to roll this functionality into the iteration of the generation function, preventing the need to repeat this iteration if the degree would be increased after the generation. After the guaranteed connections each agent then gets assigned an additional degree, which is a random number sampled from a given probability distribution, by default $\mathcal{N}(2,1)$. This number is rounded to the nearest integer. Subsequently, this amount of agents are down randomly from the set of \emph{all} agents in the network, and a link is created for those agents. When generating a directed network this procedure, including a random additional degree, occurs twice, once for the incoming degree, once for the outgoing degree. However, for an undirected network this procedure only needs to be executed once, and the chosen agents are used for both the incoming and outgoing link. \newline
+The implementation of this increased degree is rolled into the generation of the network to roll this functionality into the iteration of the generation function, preventing the need to repeat this iteration if the degree would be increased after the generation. After the guaranteed connections each agent then gets assigned an additional degree, which is a random number sampled from a given probability distribution, by default $\mathcal{N}(2,1)$. This number is rounded to the nearest integer. Subsequently, a corresponding amount of agents are drawn randomly from the set of \emph{all} agents in the network, and a link is created for those agents. When generating a directed network this procedure, including a random additional degree, occurs twice, once for the incoming degree, once for the outgoing degree. However, for an undirected network this procedure only needs to be executed once, and the chosen agents are used for both the incoming and outgoing link. \newline
 The generation of this additional degree can customized further by providing a different probability function and the corresponding parameters. This allows for the degree to be increased as much as desired, using any probability distribution.\newline
 
-Finally, the probability for self-links in the network can be set as desired. To guarantee that each agent in the network has a self-link this parameter can be set to 1 and, conversely, to ensure no agent \footnote{Except for the first agent, which always receives a self-link to ensure aperiodicity} has a self-link this parameter can simply be set to 0. Any value in between gives each agent that probability to have a self-link.
+\newpage
 
-Below is an example of an undirected network generated using this method, with increased degree:
+Finally, the probability for self-links in the network can be set as desired. To guarantee that each agent in the network has a self-link this parameter can be set to 1 and, conversely, to ensure no agent \footnote{Except for the first agent, which always receives a self-link to ensure aperiodicity} has a self-link this parameter can simply be set to 0. Any value in between gives each agent that probability to receive a self-link.
+
+Figure \ref{network:random} is an example of an undirected network generated using this method, with increased degree\footnote{Self-links not shown}:
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=.8\textwidth]{ThesisKI/Images/DirectedStandardPerAgent.png}
+        \includegraphics[width=1.15\textwidth]{ThesisKI/Images/NoneGraphRandom.png}
         \caption{Average Directed Degree}
-        \label{degree:agent}
+        \label{network:random}
     \end{figure}
 \end{center}
 
@@ -121,23 +126,98 @@ While it is clear from the visualizations that the memory usage of sparse matric
 
 \subsection{Fixed Generation}
 
-Besides 
-
 \section{Belief Initialization}
 
+The method to generate the beliefs of each agent works somewhat similar as the generation of the network itself. It can either be given a number of agents, $n$, for which to generate beliefs, or a pre-existing belief vector and a number of agents by which to grow it. The basis of the generation process is the same as described in [REF]. \newline
+To start an array of $n$ random, zero mean, error terms, $e_i$, is generated, sampled from $\mathcal{N}(0, .75)$ by default. Then the assumed truth of the network $\mu$, which has been sampled from a uniform distribution over $[0, 1]$ at the initial generation of the network, is added to every term. \newline
+However, there is one caveat to the belief generation as described above, namely that the beliefs are to lie on the interval $[0, 1]$. While $\mu$ does indeed lie on this interval, there is no guarantee that the initial beliefs, when generated as described, will too, as it is entirely possible for error terms to be generated that, when summed with $\mu$, will lie outside this interval. \newline
+An initial instinct to would be to simply truncate the generated beliefs, i.e.: whenever the a generated belief exceeds this interval simply set it equal to the closest of either $0$ or $1$. However, as $\mu$ is drawn randomly it can lie arbitrarily close to either of the borders of the interval, which would ensure an unbalanced truncation to one side of the interval, which would cause the mean of the beliefs to shift away from $\mu$, disrupting convergence.\newline
+Therefore, instead of truncating specific beliefs, the entire belief vector was normalized to lie on the interval $[0, 1]$, as follows:
+\begin{equation*}
+    \beli{i, \text{norm}}{0} = \frac{\beli{i}{0} - \min(\textbf{p}^{(0)})}{\max(\textbf{p}^{(0)}) - \min(\textbf{p}^{(0)})}
+\end{equation*}
+
+This ensures that none of the initial beliefs will exceed this threshold. Another solution to this problem would be to simply always set $\mu$ to $0.5$ and simply use a uniform distribution on the interval $[-0.5, 0.5]$ to sample the noise terms. However, this limits the choice of probability distributions of the error terms. This alternative method would always require the use of the uniform, or some other bounded distribution, to sample the noise terms. However, with the chosen method any probability function can be used, without any bounds.
+
 \section{Weight Initialization}
+
+While the network generation does create the links between agents and form the structure of the network, it does not initialize the weights on the network. Instead, whenever a link exists between to agents, the corresponding entry is simply set to $1$. However, it may be the case that not every agent places a similar weight on all of it's neighbours, which creates the need for a different weighting scheme. For this purpose, several functions have been created to enable different initialization of the weights in the network. It is important to note that these initialization functions neither delete, nor create, any links in the network, they simply increase or decrease the respective entry in the interaction matrix \T.
+
 \subsection{Uniform}
+
+The first, and default, initialization is the uniform initialization. The uniform initialization assumes that the weight placed on each incoming agent is equal. Therefore it exists not as a separate initialization function but exists simply as a \enquote{non-option}, in that it keeps the weight matrix as-is. That is to say, all weights equal to $1$.
+
 \subsection{Overlap}
+
+The overlap initialization is based on the idea that agents prefer to receive their information fro mas many different sources as possible, and tend to place less weight on regurgitated information. Therefore the weight an agent $i$ places on each of its neighbouring agents $j$ is based on the overlap between their neighbouring agents. That is to say, when agent $j$ listens to almost all the same agents as $i$, $i$ places less weight on $j$'s opinion as it stems from information it would receive from its other neighbours, anyway. Let the set of neighbouring agents of agent $i$, in the network of size $n$, be denoted as $N_i(n)$. The weight that $i$ places on $j$, based on their overlap will then become:
+\begin{equation}
+    \T_{ij}(n) = 1 - \alpha \cdot \frac{|N_i(n) \cap N_j(n)|}{|N_i(n)|}
+\end{equation}
+where $\alpha \in [0, 1]$ is a discount factor to prevent any links being deleted should the neighbouring sets of the two agents completely overlap. This initialization essentially sets the weights between two agents to be 1 minus the fraction of overlap between the two agents. This way, the higher the overlap, and therefore the less unique the provided information, the lower the weight, and vice versa. Again, like the other belief initialization, this does not create or remove links, it is only applied on those entries where there already exists a link.
+
+\newpage
+
 \subsection{Belief}
+
+Another method of initializing the beliefs is based on the idea that agents pay more attention to those agents with a mindset similar to themselves, which can be seen as a form of confirmation bias. This initialization gives a link between any two agents more weight the more similar their opinions are to one another, and vice versa. To do this first a belief matrix, for the network of size $n$, is made  by stacking the belief vector $\textbf{p}$ $n$ times:
+\begin{equation}
+    B(n) = [\textbf{p}^{(0)}(n)]^{n}
+\end{equation}
+which creates an $n \times n$ matrix with the beliefs of each agent along the corresponding row. In order to compute the difference between any two agents' opinions it simply a matter of subtracting its own transpose from this belief matrix.
+The weight that agent $i$ places on agent $j$ using this initialization then becomes:
+\begin{equation}
+    \T_{ij}(n) = 1 - \alpha \cdot |B_{ij}(n) - (B^{T})_{ij}(n)|
+\end{equation}
+where $\alpha$ is once again a discount factor to prevent link deletion. In other words the weight that agent $i$ places on $j$ is simply 1 minus their, discounted, difference in opinion.
+
 \subsection{Random}
+
+Another method of initializing the weights of the network is to simply generate the the weights randomly. This method generates an $n \times n$ matrix filled with numbers sampled from a given distribution, and corresponding parameters. In order to ensure the weights are applied only to existing links the randomly generated matrix and the interaction matrix $\T$ are multiplied element-wise.
+
+\subsection{Self-links}
+
+While the initialization of self-links is handled perfectly fine by both the uniform and random initialization, the application of initialization, based on overlap and belief, on self-links will have undesirable behaviour. When using the overlap initialization it will always assign the lowest possible weight to a self-link, as the fraction of overlap between the two agents' neighbouring sets will always equal one, as two involved agents are one and the same. Using the belief initialization, however, will have the exact opposite problem, as the difference in opinion between an agent and itself will always be 0, and therefore will always assign a the maximum weight of one to a self-link. In order to circumvent this undesirable behaviour when using these initialization functions, a function was created that randomly assigns weights to any self-links in the network. By default these self-weights are sampled from a normal distribution whose mean and standard deviation are the mean and standard deviation of all weights in the network. This ensures the weights on the self-link are in line with the rest of the weights in the network.
+
+\subsection{Normalization}
+
+While the belief initialization functions allow agents to assign different weight to their neighbours they do not guarantee the necessary condition for convergence, namely that the interaction matrix \textbf{T} is row stochastic, meaning that the values along its rows sum to one. In order to ensure this property a function was created that normalizes the matrix as follows:
+\begin{equation}
+    \T_{ij, norm} = \frac{\T_{ij}}{\sum_{j}\T_{ij}}
+\end{equation}
+
+In other words, each entry is simply divided by the sum of all weights in the corresponding rows. While this does not preserve the values given to the weights by the initialization function, it does preserve their comparative values, which is the most important aspect.
+
+
+
+\section{Updating Rules}
+
+\subsection{DeGroot}
+
+Standard updating can go one of three different ways \footnote{for networks with up to one non-cooperative agent}, step-by-step, instantly at time $t$, convergent belief through $\textbf{s}$ vector.
+
+\subsection{$\varepsilon$-DeGroot}
+\subsubsection{Standard}
+\subsubsection{Alternative}
+
+\subsection{Private Belief}
+
+\subsection{Variable Weights}
 
 \section{Non-cooperative Agents}
 
-\section{Updating Rules}
 \newpage
 \section{Appendix}
 \subsection{Proof of (strong) connectedness}
-Let a network of containing 1 agent be our base case. This network is guaranteed to be fully connected, as the first agent is guaranteed to receive a self-link. Then assuming that we have an arbitrary network of size $n$, generated using the aforementioned method, that is strongly connected, when this network is extended to the size $n+1$, using the same method, it will also be strongly connected. Let $i$ be the $n+1$'th agent, that is to say, the agent added to the network to increase it in size. As the network is grown using the aforementioned method $i$ is guaranteed to have an incoming and outgoing link to the arbitrary agents $j < n+1$ and $k < n+1$. As $j < n+1$ and $k < n+1$ it follows naturally that $j, k \in \{1, ... n\}$, and are therefore agents in the network of size $n$. However, the network of size $n$ is strongly connected, so therefore there must exist some path to and from $j$ to and from any other agent in the network, as is the case for $k$. Therefore if $i$ has a link to both $j$ and $k$ there must also be a path to and from $i$ to and from every other agent in the network. Furthermore, as $j$ and $k$ were arbitrary, this holds for every agent $i$ is guaranteed to have a link with. Therefore the network of size $n+1$ is guaranteed to be strongly connected, if the aforementioned method of generation is used.\newline
+
+\textbf{Base Case:} \newline
+Let $S_1$ be a random social network of 1 agent, generated using the method described in \ref{generation:random}.
+S is guaranteed to be fully connected, as the first agent in a network always receives a self-link.\newline
+
+\textbf{Induction Hypothesis:}\newline
+Let $S_n$ be an arbitrary, strongly connected, randomly generated network, obtained by the method described in \ref{generation:random}. Now let $S_{n+1}$ be the network that is obtained by growing the network $S_n$ by one agent. We now want to prove that if $S_{n+1}$ is grown from $S_n$ using the method from \ref{generation:random}, $S_{n+1}$ is also strongly connected.\newline
+
+To grow the network $S_n$ by one agent, the agent $n+1$ is added to the network, with two guaranteed links, one incoming and one outgoing. Let the $i$ and $j$ be the arbitrary agents involved in these links, respectively. By the generation procedure outlined in \ref{generation:random}, these agents are guaranteed to be present in $S_n$. However, by our induction hypothesis we now that $S_n$ is strongly connected, therefore there exists a directed path from $i$ and $j$ to any other agent in the network. Therefore, as agent $n+1$ has an incoming link from agent $i$, there exists an incoming path from any agent in the network to $n+1$, and, furthermore, as $n+1$ has an outgoing link to agent $j$, there also exists an outgoing path to any agent in the network. Therefore, as there exists a directed path to any agent in the network from agent $n+1$, $S_{n+1}$ must be strongly connected.\newline
+Therefore, as $S_n$ and $S_{n+1}$ were arbitrary networks, it must be the case that any network generated using this method must be strongly connected.\newline
 
 \bibliographystyle{apalike}
 \bibliography{references.bib}

@@ -10,7 +10,13 @@
 \usepackage{amssymb}
 \usepackage{systeme}
 \usepackage{mathtools}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[
+    backend=biber,
+    style=apa,
+  ]{biblatex}
 
+\addbibresource{references.bib}
 \title{Literature Review}
 \author{Roman Oort}
 \date{\today}
@@ -32,12 +38,13 @@
 \newpage
 
 \section{Literature Review}
+\todo{As it is still a draft I have not spent too much time on page layout, etc, as this is bound to change anyway}
 \subsection{Social Learning}
 Social learning is a field of study used in various different disciplines, ranging from economy to psychology, concerning the beliefs of agents in groups, and how these beliefs evolve and change over time. \cite{reed2010sociallearning}. Research in this field is dedicated to determining how individuals, and groups as a whole, change their beliefs and actions based on beliefs and actions of those around them. Many models have been proposed to formalize this process \cite{golub2017learning}, with the DeGroot model being one of the most prominent \cite{degroot1974concensus}.
 
 \subsection{DeGroot Model}
 \subsubsection{Agent Interaction}
-A DeGroot model consists of a finite set of $N=\{1, 2, ..., n\}$ of agents all interacting with each other and passing information. The $n \times n$ \emph{interaction} matrix $\T$ describes the nature of these interactions: whose opinions are heeded by whom, and how much so. If the entry $\Tij > 0$ it indicates that agent $i$ listens to agent $j$, and the value of this entry determines how much weight agent $i$ places on agents $j$'s opinion: the higher this value the more important $j$'s opinion is to $i$. It is important to note that $\T$ is a positive matrix, meaning it is not possible for an agent to place a negative weight on another agents opinion, they are only ever capable of ignoring other agents, or agreeing with them in some manner. 
+A DeGroot model (\cite{degroot1974concensus}) consists of a set of $N=\{1, 2, ..., n\}$ of agents, interacting and exchanging information, and an $n \times n$ \emph{interaction} matrix $\T$ describing the nature of these interactions: whose opinions are heeded by whom, and how much so. Finally, the model also contains a belief vector $\textbf{p}$, which will be elaborated on in \ref{beliefs}. If the entry in the interaction matrix $\Tij > 0$ it indicates that agent $i$ listens to agent $j$, and the value of this entry determines how much weight agent $i$ places on agents $j$'s opinion: the higher this value, the more important $j$'s opinion is to $i$. It is important to note that $\T$ is a positive matrix, meaning it is not possible for an agent to place a negative weight on another agents opinion, they are only ever capable of ignoring other agents, or agreeing with them in some manner. 
 
 Furthermore, the weight matrix $\T$ is a row-stochastic matrix, meaning that its rows sum to one:
 \begin{align*}
@@ -50,25 +57,24 @@ Finally, the matrix $\T$ is not necessarily symmetrical, making it entirely poss
 
 \subsubsection{Belief \& Learning}
 \label{beliefs}
-As mentioned before, the DeGroot model is a model used to simulate social learning, and is often referred to as a form of \textit{naive social learning}. This means that this model simulates the development the beliefs of the agents present in the network, as time progresses, but the updating rule at each time-step is a very simple rule and is therefore called naive.
 
-The belief of an agent $i \in N$ at a time $t \in \{0, 1, 2, ...\}$ is denoted as $p_{i}^{(t)}$, where this belief is taken as a real number on the interval $[0, 1]$. At the start of the process, $t=0$, each agent $i$ is given a personal belief, through a private signal:
+The belief of an agent $i \in N$ at a time $t \in \{0, 1, 2, ...\}$ is denoted as $p_{i}^{(t)}$, where this belief is taken as a real number on the interval $[0, 1]$. At the start of the process, at $t=0$, each agent $i$ is given a personal belief, through a private signal:
 \begin{align*}
     \beli{i}{0} = \mu + e_i
 \end{align*}
 where $\mu$ is a real number, again on the interval $[0, 1]$, assumed to be the true state of the network, and $e_i$ is the random, zero mean, noise of agent $i$'s signal. \newline
-The beliefs of all agents in the network, are aggregated into the belief vector $\textbf{p}^{(t)}$, where the $i$th entry corresponds to the belief of agent $i$, at time $t$.
+The beliefs of all agents are aggregated into the belief vector $\textbf{p}^{(t)}$, where the $i$'th entry corresponds to the belief of agent $i$, at time $t$.
 
 As time progresses the agents in the network update their own belief based on the beliefs of the agents around them, using the following updating rule:
 \begin{equation}
     \label{updating:standard}
     \textbf{p}^{(t)} = \T\textbf{p}^{(t-1)}
 \end{equation}
-which means that an agent $i$'s opinion, at time $t$, is simply the matrix multiplication of the interaction matrix and the belief vector at time $t-1$. This makes the update rule for an agent $i$ in the network the following:
+which means that the beliefs of all agents, at any time $t$, can simply be computed as the matrix multiplication of the interaction matrix and the belief vector at time $t-1$. How a single agent $i$'s opinion changes from $t-1$ to $t$ is then determined with the following calculation:
 \begin{align*}
     \beli{i}{t} = \sum_{j=1}^{n}\Tij\beli{j}{t-1}
 \end{align*}
-which simply amounts to the weighted sum of the beliefs of all neighbours of agent $i$ in the network, where agent $i$'s neighbours are those agents $j$ in the network to whom $i$ listens.
+which simply amounts to the weighted sum of the beliefs of all neighbours of agent $i$, where agent $i$'s neighbours are those agents $j$ to whom $i$ listens.
 
 Furthermore, it is possible to compute the belief vector $\textbf{p}^{(t)}$, without computing the belief vector at every preceding $t^\prime < t$, the formula for which can be derived from equation \ref{updating:standard}, as follows:
 \begin{align*}
@@ -76,22 +82,23 @@ Furthermore, it is possible to compute the belief vector $\textbf{p}^{(t)}$, wit
     &= \T\T\textbf{p}^{(t-2)}\\
     &= \T^2\textbf{p}^{(t-2)}\\
     &= \T^3\textbf{p}^{(t-3)} \\
+    & \ \ \ \ \ \  \vdots \\
     &= \T^{t}\textbf{p}^{(0)}
 \end{align*}
-
+In other words, the belief vector at time $t$ can be computed by multiplying the interaction matrix $\T$ with itself $t$ times, and multiplying the resulting matrix with the initial belief vector.
 \newpage
 
 \subsubsection{Convergence}
 \label{convergence}
-As we are interested in the spread of information through the network, and whether the agents in a network will learn the supposed true state of the world, an important notion is the concept of \emph{convergence}. A matrix \textbvf{T} is said to be convergent if:
+As we are interested in the spread of information through the network, and whether or not the agents in a network will learn the supposed true state of the world, an important notion is the concept of \emph{convergence}. The interaction matrix $\T$ is said to be convergent if:
 \begin{equation*}
     \lim_{t\to\infty} \T^t\textbf{p}
 \end{equation*}
 exists for all $\textbf{p} \in [0, 1]^n$. That is to say, as time progresses sufficiently, the beliefs of the agents, independent of their starting signal, approach a constant value and no longer change.
 
-Another important property is \emph{aperiodicity}, which concerns cycles: paths through the network that start and end at the same agent. A network is said to be aperiodic if the largest common divisor of the length of all cycles in the network is no more than 1. This condition is automatically satisfied as long as there is at least one agent present in the network who has a link to themselves, as this creates a cycle of length one, which only has one as a divisor, ensuring there can be no larger common divisor.
+Another important property is \emph{aperiodicity}, which concerns cycles: paths through the network that start and end at the same agent. A network is said to be aperiodic if the largest common divisor of the length of all cycles in the network is no more than 1. This condition is automatically satisfied as long as there is at least one agent present in the network who has a link to themselves, as this creates a cycle of length one, ensuring there can be no common divisor larger than one.
 
-A final notion important in the convergence of social networks is \emph{connectedness}. When applied to undirected networks, in which a link between two agents works both ways, a network is said to be connected when there exists some path between any two agents $i$ and $j$. However, when applied to \emph{directed} networks this notion changes slightly, and can be divided in two distinct notions, more specifically, a connected directed network can be either \emph{weakly} or \emph{strongly} connected. A directed network is said to weakly connected if there exists some undirected path between any two agents in the network. However, if there also exists a \emph{directed} path between any two agents, a directed network is said to be strongly connected.
+A final notion important in the convergence of social networks is \emph{connectedness}. When applied to undirected networks, wherein a link between two agents works both ways, a network is said to be connected when there exists some path between any two agents $i$ and $j$. However, when applied to \emph{directed} networks this notion changes slightly, and can be divided in two distinct notions, more specifically, a connected directed network can be either \emph{weakly} or \emph{strongly} connected. A directed network is said to weakly connected if there exists some undirected path between any two agents in the network. However, if there also exists a \emph{directed} path between any two agents, a directed network is said to be strongly connected.
 
 Now, assuming that \T, is the interaction matrix of a strongly connected network, the following three statements are equivalent:
 \begin{itemize}
@@ -103,7 +110,7 @@ Now, assuming that \T, is the interaction matrix of a strongly connected network
     \end{align*}
 \end{itemize}
 
- This last eigenvector property does not only give a definition of convergence, but it also provides the actual convergent belief of the network, which is nothing more than a multiplication of the influence vector \textbf{s} and the belief vector \textbf{p}. Finally, this also shows that when a network converges the convergent belief will be the same for all agents, that is to say that as time progresses eventually all agents will hold the same opinion.
+ This last eigenvector property not only provides a definition of convergence, but also the actual convergent belief of the network, which is nothing more than a multiplication of the left eigenvector, also called the influence vector, \textbf{s} and the belief vector \textbf{p}. Furthermore, as \textbf{s} is a $1 \times n$ row-vector, and \textbf{p} an $n \times 1$ column-vector, their multiplication results in a single number, highlighting that there is one single, universal, convergent belief.
 
 \newpage
 
@@ -111,7 +118,7 @@ Now, assuming that \T, is the interaction matrix of a strongly connected network
 
 Having established the convergence property for social networks it becomes possible to look towards the notion of wisdom, central in \cite{golub2010naive}. They defined wisdom to mean that a given network not only converges, but converges to the assumed true state of the model, $\mu$, specifically in the context of large societies. This means they are looking at networks where the number of agents in the network $n\to\infty$.
 
-To encapsulate the idea of large societies, providing insight in the behaviour of these models as the participating number of agents becomes sufficiently large, limiting statements with regard to the number of agents are used. A society is defined as a sequence of networks, indexed by the number of agents in the network, $n$: $\Soc$. This means that the entry $\textbf{T}(n)$ is the interaction matrix of the network in the sequence with $n$ agents, where $\textbf{T}(n)_{ij}$ is used to denote the entry $(i,j)$ in this specific sequence. A similar method of indexing is applied to all previously discussed properties of these networks, i.e.: belief vectors, influence vectors.
+To encapsulate the idea of large societies, providing insight in the behaviour of these models as the participating number of agents becomes sufficiently large, limiting statements with regard to the number of agents are used. To this end a society is defined as a sequence of networks, indexed by the number of agents in the network, $n$: $\Soc$. This means that the entry $\textbf{T}(n)$ is the interaction matrix of the network in the sequence with $n$ agents, where $\textbf{T}(n)_{ij}$ is used to denote the entry $(i,j)$ in this specific sequence. A similar method of indexing is applied to all previously discussed properties of these networks, i.e.: belief vectors, influence vectors.
 
 The beliefs of the agents are generated using the same mechanism described in section \ref{beliefs}, i.e.: independently distributed zero mean error terms added to the assumed truth, where $\beli{i}{t}(n)$ is used to indicate the belief of agent $i$ at time $t$ in a network with $n$ agents. Under the assumption that every network in our given sequence converges, we write the convergent belief of an agent $i$, that is to say the belief as $t \to\infty$, as $\beli{i}{\infty}(n)$, as described in \ref{convergence}.
 
@@ -130,31 +137,33 @@ which holds if and only if $s_{1}(n) \to 0$, where $s_1(n)$ is the first entry i
 \newpage
 
 \subsection{Obstructions to Wisdom}
+\todo{I am thinking this is probably the section were the most can be cut, as the focus in the implementation is on the non-coop agents.}
+While the wisdom of crowds effect is a powerful notion, it is not infallible. Most notably, it is also a fragile concept, with many factors capable of disrupting the network's ability to obtain wisdom. Some of these factors are consequences of the structure of the networks, while other are caused by agents who purposefully refuse to participate in the exchange of information.
 
 \subsubsection{Prominent Families}
 
-One general obstacle to the convergence to wisdom is similar to requirement of vanishing influence of individual agents. Namely, the existence of groups in the network that are disproportionally influential over other groups.
-A general obstacle to the convergence to wisdom is presence of groups that are disproportionally influential when compared to other groups in the network.
+One general obstacle to the convergence to wisdom is similar to requirement of vanishing influence of individual agents. Namely, the existence of groups, in the network that are disproportionally influential over other groups.
+This means that the existence of a group in the network with a disproportional sway over the rest of the network can steer the entirety of the network away from the truth, just as a single over-influential agent can.
 
-To reason about groups and the influence between them a definition of the influence of a groups is necessary, as all previously mentioned notions of influences were applied only on the scale of individual agents. Let $B$ and $C$ be two groups in the network s.t. $B \subset N$ and $C \subset N$ and $B \cap C = \emptyset$, where $N$ is the set of all agents in the network, then the weight that group $B$ places on $C$ is defined as follows:
+To reason about the influence of groups first an actual definition of the influence of a group is necessary, as all previously mentioned notions of influence were applied only on the scale of individual agents. To this end, let $B$ and $C$ be two groups in the network s.t. $B \subset N$, $C \subset N$ , where $N$ is the set of all agents in the network, then the weight that group $B$ places on $C$ is defined as follows:
 \begin{equation}
     \textbf{T}_{B, C} = \sum_{i\in B}\sum_{j \in C} \Tij
 \end{equation}
-Simply put: the weight of a group $C$ on another group $B$ is simply the sum of all incoming links from agents in $B$ to agents in $C$.
+Simply put: the total weight of a group $C$ on another group $B$ is simply the sum of all incoming weights to agents in $B$ from agents in $C$.
 
-Another measure used to describe the influence of groups is the prominence of a group, which is a measure of the influence of a group $B$ over the entire network \textbf{T}, rather than another group in the network.
- A network is said to be prominent, at a given $t$, if every agent $i \notin B$ in the network listens to some agent $j\in B$, at that $t$.
-A group $B$ is therefore said to be prominent in $t$ steps relative to a network \textbf{T} if, for every $i \notin B$, $(\textbf{T}^{t})_{i,B} > 0$. An important property based on this notion is the $t$-step prominence of B relative to \textbf{T}: 
+Another measure used to describe the influence of groups is the prominence of a group, which is a measure of a group's influence respective to the entire network, rather than one single group.
+A group $B$ is said to be prominent, at a given $t$, if every agent $i \notin B$ in the network listens to some agent $j\in B$, at that $t$.
+A group $B$ is therefore said to be prominent in $t$ steps, relative to a network, if,for every $i \notin B$, $(\textbf{T}^{t})_{i,B} > 0$. An important property based on this notion is the $t$-step prominence of B relative to \textbf{T}: 
 \begin{equation}
     \pi_B(\textbf{T}; t) = \min_{i\notin B} (\textbf{T}^{t})_{i,B}
 \end{equation}
-This is the smallest weight that is placed on some agent in the group $B$, by some agent $i\notin B$. Therefore this value will only be larger than zero for any values $t \geq t^{\prime}$, where $t^{\prime}$ is the smallest t for which
-the group $B_n$ is prominent relative to the network.
+This is the smallest weight that is placed on some agent in the group $B$, by any agent $i\notin B$. Therefore this value will only be larger than zero for any values $t \geq t^{\prime}$, where $t^{\prime}$ is the smallest t for which
+the group $B$ is prominent relative to the network.
 \newline
 
-However, these definitions of groups are defined only on single networks while, in the context of wisdom, we are interested in sequences of networks. The notion of groups can be slightly expanded to be useful in the context of societies. For this end we define a family as a sequence of groups $(B_n)$, where each $B_n \subset \{1, ..., n\}$, such that each group in the sequence is a subset of the agents present in the network of size $n$.
+However, these definitions of groups are defined only on single networks, while, in the context of wisdom, the interest lies in sequences of networks. The notion of groups can be slightly expanded to be useful in the context of societies. For this purpose a family is defined as a sequence of groups $(B_n)$, where each $B_n \subset \{1, ..., n\}$, such that each group in the sequence is a subset of the agents present in the network of that size $n$.
 
-Having extended the notion of groups to the context of societies the measure of prominence can be expanded in a similar manner. Namely, a family $(B_n)$ is said to to uniformly prominent relative to $\Soc$ if there exists a constant, $\alpha$, and there is a $t$ such that $B_n$ is prominent in $t$ steps relative to $\T(n)$, and $\pi_B(\textbf{T}; t) \geq \alpha$, for every $n$. In other words, for a family $B_n$ to be uniformly prominent it has to have a minimum influence greater than $\alpha$ over each individual agent $i$ outside of $B_n$, at every size $n$ of the society.
+Having extended the notion of groups to the context of societies the prominence measure can be expanded in a similar manner. Namely, a family $(B_n)$ is said to to uniformly prominent relative to $\Soc$ if there exists a constant, $\alpha$, and there is a $t$ such that $B_n$ is prominent in $t$ steps relative to $\T(n)$, and $\pi_B(\textbf{T}; t) \geq \alpha$, for every $n$. In other words, for a family $B_n$ to be uniformly prominent it has to have a minimum influence greater than $\alpha$ over each individual agent $i$ outside of $B_n$, at every size $n$ of the society.
 
 \noindent Finally, a family $(B_n)$ is called finite if there exists some $q$ such that:
 \begin{equation*}
@@ -166,49 +175,32 @@ Now, it is the case that the disproportional influence of groups can cause a net
 
 \subsubsection{Non-cooperative Agents}
 \label{non-coop}
-Another factor capable of preventing wisdom in a network is the presence of a non-cooperative agent in the network \cite{amir2021robust}. That is to say, an agent in the network who does not adhere to the regular updating mechanics, deliberately spreading misinformation to its neighbours. The presence of even one of these non-cooperative agents in  the network is enough to prevent wisdom in the network, assuming the private belief of this agent is not equal to the assumed truth. Even though a network may satisfy all the necessary conditions required for wisdom this one agent not playing by the rules will steer the network away from the convergent belief. In fact, not only will this agent prevent the other agents from converging to the truth, it also ensures all other agents converge to its own belief.
-
-
-When a non-cooperative agent, or bot \cite{amir2021robust}, is present in the network instead of converging towards wisdom, in a network of sufficient size, the opinions of the agents will converge towards the opinion of the non-cooperative agent in the network. 
+Another factor capable of preventing wisdom in a network is the presence of a non-cooperative agent in the network (\cite{amir2021robust}). That is to say, an agent in the network not adhering to the regular updating mechanics, deliberately spreading misinformation to its neighbours. The presence of even one of these non-cooperative agents in  the network is enough to prevent wisdom in the network. \footnote{Assuming the private belief of this agent is not equal to the assumed truth.} Even though a network may satisfy all the necessary conditions required for wisdom this one agent not playing by the rules will steer the network away from, what otherwise would have been, the convergent belief. In fact, not only will this agent prevent the other agents from converging to the truth, they also make all other agents converge to the belief of this non-cooperative agent (\cite{amir2021robust}).
 
 \subsubsection{Structural Obstructions}
 
-Finally there are some obstructions that prevent the occurrence of wisdom in a given society that are more dependent on the actual structure of the network rather than the weights on the links or adherence to the updating rules. One example of such a structure is a specific network, called a star network. A star network is a fully connected network in which there is one agent which has a connection to every other agent in the network, while every other agent only has a connection to this one agent. These networks are called star networks because, when visualized, obtain a star-like shape, an example of which can be seen in figure \ref{network:star} below.
-
-\begin{center}
-    \begin{figure}[!htbp]
-        \centering
-        \includegraphics[width=\textwidth]{ThesisKI/Images/DegreeStarGraph.png}
-        \caption{Degree Distribution, Instant}
-        \label{network:star}
-    \end{figure}
-\end{center}
-\newpage
-Here the network is shown for $n=15$, but this specific shape of network can be extended to any size $n$, using the same principle of one agents who is connected to every other agent, with the other agents only connecting with this center agent. As a consequence this one agent in the center has a disproportional amount influence when compared to the other agents. Therefore, if this agent's initial belief diverges enough from the truth the condition for wisdom described in \ref{wisdom:influence} is no longer satisfied.
-
-However, networks where there is not a single agent with a disproportionate amount of connections can still disrupt the wisdom of a network. An example of this is the unbalanced line network described by \cite{golub2010naive}, where the network forms a line, where each agent $n$ places a weight of $\delta \in (0, \frac{1}{2})$ on the agent $n+1$, and places a weight of $1-\delta$ on the agent $n-1$. The two agents at the start and end of this line, $1$ and $n$, place a weight on their own opinion of $1-\delta$ and $\delta$ respectively. In this case the influence of agent $1$ can become arbitrarily close to $1$ by choosing $\delta$ to be sufficiently small, once again violating \ref{wisdom:influence}, preventing wisdom.
-
-So, as there are structural obstructions to the wisdom of a society, so too are there some structural conditions that need be satisfied to ensure wisdom. Determining these conditions requires some more notions about the structures of the network, like the concept of balance. For a network to be considered balanced there must be a sequence $j(n) \to \infty$, such that if $|B_n| \leq j(n)$ then:
+Finally there are some obstructions that prevent the occurrence of wisdom in a given society that are more dependent on the actual structure of the network rather than the weights on the links or adherence to the updating rules (\cite{jackson2010social}). Determining these conditions requires some more notions about the structures of the network, the first being the notion of balance. For a network to be considered balanced there must be a sequence $j(n) \to \infty$, such that if $|B_n| \leq j(n)$ then:
 \begin{equation}
     \sup_n \frac{\T_{B^c_n, B_n}(n)}{\T_{B_n, B^c_n}(n)} < \infty
 \end{equation}
-
-This notion captures the idea that a group cannot be too self-centered, that is to say, that it is influenced a disproportionately by agents outside said groups, while the group itself exerts very little influence on those agents. However this only needs to hold for groups smaller than indicated by the sequence $j(n) \to\infty$.
+That is to say, for a network to be balanced, as the network, and this group $B$, grow, the amount of attention paid to said group by outside agents cannot be infinitely many times larger than the weight placed on the outside agents by the agents that \emph{are} part of this group.
+This notion captures the idea that a group cannot be too self-centered, paying very little attention to what others outside of that group are saying. However this only needs to hold for groups smaller than indicated by the sequence $j(n) \to\infty$, which can increase arbitrarily slow, rendering it relatively harmless.
 This property is a natural extension of the idea that one single agent should not be getting infinitely more weight than they are placing on other agents, but applied to groups rather than individual agents. \newline
 
-However, balance alone is note enough to ensure a wise network. Another important, structural, measure is the minimal out-dispersion. This condition states that there exists some $q\in \mathbb{N}$ and $r > 0$, such that if $B_n$ is a finite group, $|B_n|\geq q$ and $\frac{|C_n|}{n}\to 1$, then $\textbf{T}_{B_n, C_n} > r$, as $n$ becomes sufficiently large. Simply put, this condition requires that any finite group of a give size must place a minimal amount of weight on a group consisting of nearly the entire network. This prevents specific groups from only focussing their attention inward and ignoring the vast majority of the network.
+However, balance alone is not enough to ensure a wise network. Another important, structural, measure is the minimal out-dispersion. This condition states that there exists some $q\in \mathbb{N}$ and $r > 0$, such that if $B_n$ is a finite group, $|B_n|\geq q$ and $\frac{|C_n|}{n}\to 1$, then $\textbf{T}_{B_n, C_n} > r$, as $n$ becomes sufficiently large. Simply put, this condition requires that any finite group of a given size must place a minimal amount of weight on a group consisting of nearly the entire network. This prevents smaller groups to remain in their own isolated clusters, focusing almost all their attention inwards, ignoring the vast majority of the network.
 
-With these two condition in place it is possible to formulate a sufficient condition for wisdom, namely, that if $\Soc$ satisfies \emph{both} balance and minimal out-dispersion, it is wise.
+With these two condition in place it is possible to formulate a sufficient condition for wisdom, namely, that if a society $\Soc$ satisfies \emph{both} balance and minimal out-dispersion, it is wise.
 
 \subsection{Variations}
-As mentioned in \ref{non-coop} the presence of non-cooperative agents in the network is greatly disruptive for the ability of a network to attain wisdom. So much so, even, that only one non-cooperative agent is sufficient to prevent any network, regardless of size, from attaining wisdom. Furthermore, not only does this agent prevent wisdom, it also ensures that the final convergent belief of the network will be equal to its own belief, with regard for neither the initial beliefs of the agents, nor the assumed truth of the network. As the presence of even one such agent disrupts the wisdom of the entire network research is done on how to make the standard, \emph{naive}, DeGroot model more resilient to the presence of such non-cooperative agents.
+
+As mentioned in \ref{non-coop} the presence of non-cooperative agents in the network is greatly disruptive for the ability of a network to attain wisdom. So much so, even, that only one non-cooperative agent is sufficient to prevent any network, regardless of size, from attaining wisdom. Furthermore, not only does this agent prevent wisdom, they also ensure that the final convergent belief of the network will be equal to their own belief, with regard for neither the initial beliefs of the cooperative agents, nor the assumed truth of the network. As the presence of even one such agent disrupts the wisdom of the entire network research is done on how to make the standard, \emph{naive}, DeGroot model more resilient to the presence of such non-cooperative agents. Several variations of the DeGroot model, and how they distinguish themselves from the standard model, will be discussed.
 
 \subsubsection{$\varepsilon$-DeGroot}
 
-One such variation, specifically designed by \cite{amir2021robust} to combat the presence of such non-cooperative agents in the network, is called $\varepsilon$-DeGroot. This variation makes a small adjustment to the standard updating rule of the DeGroot model, in an attempt to achieve wisdom despite non-cooperative agents present in the network.
+One such variation, specifically designed by \cite{amir2021robust} to combat the presence of such non-cooperative agents in the network, is called $\varepsilon$-DeGroot. This variation makes a small adjustment to the standard updating rule of the DeGroot model, in an attempt to achieve wisdom, despite any non-cooperative agents present in the network.
 
-In the standard DeGroot model an agent's belief at time $t$ is simply the weighted sum of their neighbours' opinions, according to \ref{updating:standard}. In contrast, in the $\varepsilon$-DeGroot model, the parameter $\varepsilon$ is used as a threshold in the updating step to prevent agents from changing their belief drastically in a single time-step.
-Instead of simply updating their current opinion, $x$, to the weighted sum of their neighbours' opinions, $y$, they check whether the difference between the two falls under the threshold before updating their opinion, changing the updating rule from \ref{updating:standard} to:
+In the standard DeGroot model an agent's belief at time $t$ is simply the weighted sum of their neighbours' opinions, according to \ref{beliefs}, with no limit on how much an agent can change their opinion in a single time-step. In contrast, in the $\varepsilon$-DeGroot model, the parameter $\varepsilon$ is used as a threshold in the updating step to prevent agents from changing their belief drastically in a single time-step.
+Instead of simply updating their current opinion, $x$, to the weighted sum of their neighbours' opinions, $y$, they check whether the difference between the two falls under the threshold before updating their opinion, changing the updating rule from equation \ref{updating:standard} to:
 
 \begin{equation}
     \label{edegroot:updating}
@@ -218,7 +210,7 @@ Instead of simply updating their current opinion, $x$, to the weighted sum of th
   y^{\prime}\in\{y-\varepsilon, y+\varepsilon\}\text{ s.t. }|\beli{i}{t-1} - y^{\prime}|\text{ is minimized, otherwise}
   \end{matrix*}
 \end{equation}
-where $y = (\textbf{T}\textbf{p}^{t-1})_i$. This means that at each $t$ each agent $i$ does not indiscriminately change their opinion to the combined opinion of its neighbours', as under regular DeGroot mechanics. Rather, it checks whether the difference between this combined belief and its own, previous, belief, falls under a certain threshold, given by $\varepsilon$. If so, it takes this combined opinion, otherwise it changes its opinion to the closest of $\{y-\varepsilon, y+\varepsilon\}$. So, the larger $\varepsilon$ is chosen, the more an agent can change its opinion in a single updating step, and the smaller this $\varepsilon$ is chosen, the more this rule approaches the standard DeGroot updating process. After all, if $\varepsilon = 0$ the updating rule becomes:
+where $y = (\textbf{T}\textbf{p}^{t-1})_i$. This means that at each $t$ each agent $i$ does not indiscriminately change their opinion to the combined opinion of their neighbours, as with regular DeGroot mechanics. Rather, they check whether the difference between this combined belief and their own, previous, belief, falls under a certain threshold, given by $\varepsilon$. If so, they take this combined opinion, otherwise they change their opinion to the closest of $\{y-\varepsilon, y+\varepsilon\}$. So, the larger $\varepsilon$ is chosen, the more an agent can change their opinion in a single updating step, and the smaller this $\varepsilon$ is chosen, the more this rule approaches the standard DeGroot updating process. After all, if $\varepsilon = 0$ the updating rule becomes\todo{Not sure if it is necessary to show this explicitly}:
 \begin{equation*}
   \beli{i}{t} =\Bigg\{
   \begin{matrix*}[l]
@@ -227,10 +219,10 @@ where $y = (\textbf{T}\textbf{p}^{t-1})_i$. This means that at each $t$ each age
   \end{matrix*}
 \end{equation*}
 
-Using an updated metric for the learning process, called $(\delta, \rho)$-learning, which is achieved by that agent if their opinions falls with in $\delta$ of the assumed truth, $\mu$, with probability $1 - \rho$. On an infinite graph this condition is satisfied when all but a finite group of agents satisfy this condition. \newline
+Using an updated metric for the learning process, called $(\delta, \rho)$-learning, which is achieved by that agent if their opinions falls with in $\delta$ of the assumed truth, $\mu$, with probability $1 - \rho$. On an infinite graph this condition is satisfied when all but a finite group of agents satisfy this condition.\todo{Not sure whether to mention this, as this metric is really only useful in the context of infinite networks} \newline
 
-One thing to note is that the $\varepsilon$-DeGroot mechanics do not necessarily impose a hard limit on the change of opinion of an agent. After all, when the threshold is exceeded the updated is still based on the newly computed opinion, which could lay arbitrarily far away, on the interval $[0, 1]$, from the currently held opinion. Therefore an alternate approach to the $\varepsilon$-DeGroot dynamics would be to base the new opinion, should the difference between the currently held opinion and the newly computed one exceed the threshold, on the currently held opinion, rather than the 
-newly computed one. In case the threshold is exceeded this would impose a hard limit on how much agents' opinion can change at once. This would change the updating rule as described in \ref{edegroot:updating} to:
+
+\todo{Alternative method should probably be discussed in the method, as it does not directly stem from the literature}One thing to note is that the $\varepsilon$-DeGroot dynamics as described above do not impose a hard, uniform, limit on how much an agent's opinion can change. But rather, this maximum change is determined by the new belief of each agent, and therefore varies from agent to agent. Therefore an alternate approach to the $\varepsilon$-DeGroot dynamics would be to base the new opinion, should the difference between the currently held opinion and the newly computed one exceed the threshold, on the currently held opinion, rather than the newly computed one, changing the updating rule to:
 \begin{equation*}
     \label{edegroot:alt}
     \beli{i}{t} =\Bigg\{
@@ -239,32 +231,30 @@ newly computed one. In case the threshold is exceeded this would impose a hard l
         x^{\prime}\in\{\beli{i}{t-1}-\varepsilon, \beli{i}{t-1}+\varepsilon\}\text{ s.t. }|y - x^{\prime}|\text{ is minimized, otherwise}
     \end{matrix*}
 \end{equation*}
-In other words, should the difference between the new opinion and the previous opinion exceed the threshold, $\varepsilon$ is simply added to, or subtracted from, the current opinion, whichever is closest to the belief as computed through the standard updating rule.
-
-\newpage
+In other words, should the difference between the new opinion and the previous opinion exceed the threshold, $\varepsilon$ is simply added to, or subtracted from, the current opinion, whichever is closest to the belief as computed through the standard updating rule. This imposes a hard limit on how much an agents opinion can change in a single update, namely $\varepsilon$. This hard limit is universal for all agents in the network, instead of varying across different agents as is the case in the regular $\varepsilon$-DeGroot rule.
 
 \subsubsection{Private Belief}
 
-Another variation introduced by [FRIEDKIN AND JOHNSEN, 1999 GEREFD IN GOLUB 2017], permits each agent to hold on to persistent private belief. When updating each agent then not only considers the weighted sum of the beliefs of their neighbouring agents, but also take into account this private belief. Furthermore, this private belief does not change over time, but remains constant, making it distinct from an agents' link to itself, should this be present. This variation on the model changes the updating rule to the following:
+Another variation introduced by \cite{friedkin1990private}, permits each agent to hold on to persistent private belief. When updating each agent then not only considers the weighted sum of the beliefs of their neighbouring agents, but also take into account this private belief. Furthermore, this private belief does not change over time, but remains constant, making it distinct from an agents' link to themselves, should this self-link be present. This variation on the model changes the updating rule to the following:
 
 \begin{equation}
-    \beli{i}{t} &= (1-\alpha_i)(\textbf{T}\textbf{p}^{(t-1)})_i + \alpha_i b_i
+    \beli{i}{t} = (1-\alpha_i)(\textbf{T}\textbf{p}^{(t-1)})_i + \alpha_i b_i
 \end{equation}
-where $b_i$ is the private belief of an agent $i$, of course on the interval $[0, 1]$, and $alpha_i$ is the weight that said agent places on their private belief, also on the interval $[0, 1]$. In essence the updating rule becomes a weighted sum of the new belief, as computed through the standard updating rule, and an agent's private belief.
+where $b_i$ is the private belief of an agent $i$, of course on the interval $[0, 1]$, and $\alpha_i$ is the weight that said agent places on their private belief, also on the interval $[0, 1]$. In essence the updating rule becomes a weighted sum of the new belief, as computed through the standard updating rule, and an agent's private belief.
 
 \subsubsection{Stochastic DeGroot}
 
-One final variation on the standard DeGroot model that will be discussed is the \emph{stochastic} DeGroot model. Rather than keeping the interaction matrix $\textbf{T}$ constant as $t \to \infty$, the stochastic DeGroot model allows this matrix $\textbf{T}$ to change over time. This alleviates one of the main pitfalls of the standard DeGroot model, which supposes that each agent will never change the weight they place on the opinions of their neighbours. Instead a stochastic DeGroot model allows the weights to evolve over time. This changes the updating rule to the following:
+One final variation on the standard DeGroot model that will be discussed is the \emph{stochastic} DeGroot model, introduced by \cite{chatterjee1977stochastic}. Rather than keeping the interaction matrix $\textbf{T}$ constant as $t \to \infty$, the stochastic DeGroot model allows this matrix $\textbf{T}$ to change over time. This alleviates one of the main shortcomings of the standard DeGroot model, which supposes that each agent will never change the weight they place on the opinions of their neighbours. Instead a stochastic DeGroot model allows the weights to evolve over time. This changes the updating rule to the following:
 \begin{equation*}
-    \beli{i}{t} &=(\textbf{T}(t)\textbf{p}^{(t-1)})_i
+    \beli{i}{t} =(\textbf{T}(t)\textbf{p}^{(t-1)})_i
 \end{equation*}
-The idea of the updating rules remains the same, the only difference being that the weight matrix $\textbf{T}$ is now also dependent on the time rather than being constant.
+The idea of the updating rules remains the same, the only difference being that the weight matrix $\textbf{T}$ now also varies over time, rather than being constant.
 \newpage
 
+\printbibliography
 
-
-\bibliographystyle{apalike}
-\bibliography{references.bib}
+%\bibliographystyle{apa}
+%\bibliography{references.bib}
 \end{document}
 
 
