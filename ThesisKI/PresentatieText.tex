@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{textcomp}
+\usepackage{eurosym}
+\usepackage{amssymb}
+\usepackage{systeme}
+\usepackage{mathtools}
+
+\title{Introduction}
+\author{Roman Oort}
+\date{\today}
+
+%%% PERSONAL SHORTCUTS
+\DeclareMathOperator*{\plim}{plim}
+\newcommand{\T}{\textbf{T}}
+\newcommand{\Tij}{\textbf{T}_{ij}}
+\newcommand{\Soc}{(\T(n))^{\infty}_{n=1}}
+\newcommand{\beli}[3][2]{p_{#2}^{(#3)}}
+\newcommand{\belvec}[2]{\textbf{p}^{(#2)}}
+
+\begin{document}
+
+\maketitle
+
+The subject of my thesis concerns the DeGroot dynamics in social learning, which is a way to model how agents' opinions in a network change over time as they interact with each other and pass around information. One of the properties of this model is that, as enough time passes, beliefs of the individual will converge to a single identical belief, which, as the network becomes sufficiently large, is equal to the assumed truth of the model.
+
+The more specific focus of the thesis lies on the behaviour of these dynamics in the presence of non-cooperative agents, or bots, that is to say agents who do not adhere to these standard updating rules but rather influence other agents without ever changing their own opinion. When such agents are present in the network the convergent belief strays from the assumed truth but rather becomes equal to the opinion of this non-cooperative agent. The goal is to analyze different variations on the DeGroot model and find a variation that is more resilient to the presence of bots, and still allow convergence towards truth.
+
+In order to analyze these variations a method to generate random networks, satisfying the requirements for a DeGroot model, needed to be created, the results of which are shown in this visualization. A method was devised to generate networks of varying sizes, with both directed and undirected links, and with the ability to add non-cooperative agents to this network at will.
+
+Now having the ability to generate random networks, it was necessary to examine the convergence of a standard cooperative network to confirm that these indeed behave as expected. The results can be seen in this graph, which shows the standard deviation of the beliefs of all agents over time for different variations of the network generation. As can be seen the standard deviation of this vector tends to zero, meaning that all beliefs do indeed converge to an identical value.
+
+Having confirmed the convergence of the networks it was necessary to verify the wisdom of the network, which can be seen in this plot here, which shows the convergent belief of the network as the networks grows, the light blue line, which does indeed converge towards the truth of the model, the yellow line.
+
+Then this was repeated but with the presence of a bot in the network, which shows that the network, were this non-cooperative agent not present, would still converge towards the truth, however, with the presence of the bot the convergent belief perfectly overlaps with belief of this bot, regardless of network size.
+
+However, when instead of only one, multiple bots where added towards the networks, there no longer was a single convergent belief, but rather each agent adopted their own specific weighted sum of the opinions of all bots in the network. The mean of the resulting belief vector at the time of convergence would then be equal to the weighted sum of bots' opinions, where the weights are the average weight placed on that specific bot by all regular agents.
+And what's more, as the number of non-cooperative agents in the network increases the convergent opinions of the agents start to differ more and more, which can be seen in the following graph, where the standard deviation of the convergent belief vector is shown for an increasing number of bots.
+
+Finally, in attempt to explain the different weights placed on each non-coop agent a plot was made that shows the seperation between each bot and regular agent, and the weight placed on the connection between them at the time of convergence. This does reflect that the closer an agent and a bot are the higher the weight placed on this connection. However it is not a clear 1-to-1 comparison as there is some variation where there is equal separation but different weights, and vice versa.
+
+The next goal is to implement the various variations on the DeGroot mechanics, and examine their performance in the presence of the bots, to see whether they are successful in making the model more resilient to bots.
+\newpage
+
+\begin{itemize}
+    \item Subject = learning in social networs=ks
+    \item Change in beliefs over time
+    \item Beliefs converge, and as network grows converge to truth
+    \item Main focus is on influence of non-cooperative agents or bots
+    \item Implement and analyze varitions and compare resilience t bots
+    \item Firs random network generation as can be seen in this visualization
+    \item Then to confirm networks do indeed converge the std of the belief vector as time passes
+    \item Then as network grows beliefs, light blue, converge towards truth, yellow
+    \item However, with non-coop agent overlap with bot belief, at every network size
+    \item However, with mutliple bots not one single belief, but each agent different belief
+    \item Difference increaes as the number of bots increases
+    \item Average belief becomes weighted sum of bots' beliefs
+    \item In attempt to analyze final weight on each bot, plot was made to compare distance and weight
+    \item Finally implementation and speed of convergence for different network
+\end{itemize}
+
+\end{document}
