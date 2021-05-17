@@ -15,6 +15,7 @@
 \usepackage[bottom]{footmisc}
 \usepackage{mwe}
 \usepackage{csquotes}
+\usepackage[colorinlistoftodos]{todonotes}
 
 \title{Method}
 \author{Roman Oort}
@@ -153,7 +154,7 @@ The overlap initialization is based on the idea that agents prefer to receive th
 \begin{equation}
     \T_{ij}(n) = 1 - \alpha \cdot \frac{|N_i(n) \cap N_j(n)|}{|N_i(n)|}
 \end{equation}
-where $\alpha \in [0, 1]$ is a discount factor to prevent any links being deleted should the neighbouring sets of the two agents completely overlap. This initialization essentially sets the weights between two agents to be 1 minus the fraction of overlap between the two agents. This way, the higher the overlap, and therefore the less unique the provided information, the lower the weight, and vice versa. Again, like the other belief initialization, this does not create or remove links, it is only applied on those entries where there already exists a link.
+where $\alpha \in [0, 1]$ is a discount factor to prevent any links being deleted should the neighbouring sets of the two agents completely overlap. This initialization sets the weights between two agents to be 1 minus the fraction of overlap between the two agents. This way, the higher the overlap, and therefore the less unique the provided information, the lower the weight, and vice versa. Again, like the other belief initialization, this does not create or remove links, it is only applied on those entries where there already exists a link.
 
 \newpage
 
@@ -191,9 +192,12 @@ In other words, each entry is simply divided by the sum of all weights in the co
 
 \section{Updating Rules}
 
+In order to compare the different variations on the DeGroot mechanics these variations all needed their respective updating rules to be implemented.
+
 \subsection{DeGroot}
 
-Standard updating can go one of three different ways \footnote{for networks with up to one non-cooperative agent}, step-by-step, instantly at time $t$, convergent belief through $\textbf{s}$ vector.
+As shown in section [REF]\todo{ref naar updating rule section} $\textbf{p}^{(t)}$ can be computed two different ways. The first is the iterative method described in equation [REF] \todo{ref naar iterative updating method}, simply multiplying the belief vector at the previous time-step, $\textbf{p}^{(t-1)}$, with the interaction matrix, $\T$.
+The second is to use the method described in equation [REF] \todo{ref naar verkorte updating rule}, which states that to compute the belief vector for a specific $t$, the initial belief vector can be multiplied with the interaction matrix, raised to the power of that $t$. However, the in
 
 \subsection{$\varepsilon$-DeGroot}
 \subsubsection{Standard}
