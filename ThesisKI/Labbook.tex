@@ -361,6 +361,27 @@ The function that creates the plots for the comparison between degree separation
 
 \subsection{5/5/2020}
 A function was added that plots the converge of a network in both the cooperative and non-cooperative case. It uses the same code as the function that plots the converge of a single network.
+Furthermore a function was added that allows for making a directed network undirected. This was achieved by taking the element-wise maximum of the weight array and its transpose, as this effectively mirrors all links across the diagonal, thereby making every incoming link also an outgoing link, and vice versa.
+
+\subsection{6/5/2020}
+A function was added that plots the memory usage of the networks, comparing that of a dense network and a sparse network. This was done by creating networks of increasing size and measuring their memory usage. This highlights the severely increased memory efficiency of sparse matrices compared to standard, dense, matrices, as shown in figure \ref{generation:memory}.
+
+\begin{center}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=.75\textwidth]{ThesisKI/Images/Memory.png}
+        \caption{Degree separation and weight, 4 non-coop agents}
+        \label{generation:memory}
+    \end{figure}
+\end{center}
+
+\subsection{7/5/2020}
+
+The updating rule of the $\varepsilon$-DeGroot model has been implemented. This function is given a weight matrix and the corresponding beliefs, the $\varepsilon$ and the time $t$ for which the beliefs have to be computed. Then, for each t it firs applies the normal updating rule to get the beliefs, as through the standard DeGroot model. Then this new belief vector is compared with the beliefs at $t-1$, and stores the indeces of those entries where the difference between the two exceeds the threshold. For these indeces it checks which of the new belief plus or minus the threshold is closest to the current belief and updates it accordingly. \newline
+
+An alternative version of the $\varepsilon$-DeGroot dynamics have also been implemented. The basic procedure remains unchanged, only, instead of determining which of the new belief plus or minus the threshold is closest to the old belief, it determines which of the \emph{old} belief plus or minus the threshold lies closest to the \emph{new} belief.
+
+Furthermore a function was created that used these previous functions to determine how many updating steps are required for the network to converge, for various values of $\varepsilon$. This is done by stacking the belief vector $e$ times, where $e$ is the amount of values given for $\varepsilon$. Then the function starts iterating as long as there is one belief vector that has not yet converged. At each iteration the function checks which vectors have already converged, and updates those who have not done so, using the chosen update rule and the respective $\varepsilon$.
 
 
 
