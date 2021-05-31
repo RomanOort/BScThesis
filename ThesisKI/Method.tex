@@ -16,6 +16,7 @@
 \usepackage{mwe}
 \usepackage{csquotes}
 \usepackage[colorinlistoftodos]{todonotes}
+\usepackage{subfig}
 
 \title{Method}
 \author{Roman Oort}
@@ -35,6 +36,7 @@
 
 \tableofcontents
 \newpage
+
 \section{Network Generation}
 
 \subsection{Random Generation}
@@ -188,26 +190,58 @@ While the belief initialization functions allow agents to assign different weigh
 
 In other words, each entry is simply divided by the sum of all weights in the corresponding rows. While this does not preserve the values given to the weights by the initialization function, it does preserve their comparative values, which is the most important aspect.
 
+\newpage
 
-
-\section{Updating Rules}
+\section{Updating Rules \& Convergence}
 
 In order to compare the different variations on the DeGroot mechanics these variations all needed their respective updating rules to be implemented.
 
 \subsection{DeGroot}
 
-As shown in section [REF]\todo{ref naar updating rule section} $\textbf{p}^{(t)}$ can be computed two different ways. The first is the iterative method described in equation [REF] \todo{ref naar iterative updating method}, simply multiplying the belief vector at the previous time-step, $\textbf{p}^{(t-1)}$, with the interaction matrix, $\T$.
-The second is to use the method described in equation [REF] \todo{ref naar verkorte updating rule}, which states that to compute the belief vector for a specific $t$, the initial belief vector can be multiplied with the interaction matrix, raised to the power of that $t$. However, the in
+As shown in section [REF]\todo{ref naar updating rule section} $\textbf{p}^{(t)}$ can be computed two different ways. The first is the iterative method described in equation [REF] \todo{ref naar iterative updating method}, simply multiplying the belief vector at the previous time-step, $\textbf{p}^{(t-1)}$, with the interaction matrix, $\T$, and repeating this process $t$ times. In order to converge a network, using the standard DeGroot dynamics, this process is repeated, until the difference between $\textbf{p}^{(t)}$ and $\textbf{p}^{(t-1)}$ is zero, or near enough. In other words, the updating step is applied until the beliefs no longer change from one step to another.
+
+The second is to use the method described in equation [REF] \todo{ref naar verkorte updating rule}, which states that to compute the belief vector for a specific $t$, the initial belief vector can be multiplied with the interaction matrix, raised to the power of that $t$. However, upon examination of the computational time, as shown in figure \ref{update:time}, [REF] \todo{ref naar exponentiation update rule}, is significantly slower, for both dense and sparse matrices.
+\todo{fontsize}
+\begin{figure}[!htbp]%
+    \centering
+    \subfloat[\centering Dense Matrix]{{\includegraphics[width=.45\textwidth]{ThesisKI/Images/UpdatingTimeDense.png} }}%
+    \qquad
+    \subfloat[\centering Sparse Matrix]{{\includegraphics[width=.45\textwidth]{ThesisKI/Images/UpdatingTimeSparse.png} }}%
+    \caption{Updating time}%
+    \label{update:time}%
+\end{figure}
+
+Therefore the iterative method was implemented, in order to significantly speed the updating process. Furthermore, this also allows for saving all intermediate belief vectors, providing insight in the rate of convergence of the network.
+
+However, as shown by \cite{degroot1974concensus}, the convergent belief can also be computed directly, using the eigenvector of the interaction matrix, $\T$, corresponding to $\lambda=1$. Therefore another function was made for those cases where only the convergent belief is of interest. This function gives only the convergent opinion of the network.
 
 \subsection{$\varepsilon$-DeGroot}
 \subsubsection{Standard}
+
+The second updating rule that can be sued to converge a network is the $\varepsilon$-DeGroot variation mentioned in section [REF]\todo{ref naar section $\varepsilon$}. The general framework is the same as for standard DeGroot method: repeatedly apply the updating rule until the beliefs stop changing. However, to converge a network using this method a slight modification is necessary. First of all under the $\varepsilon$-DeGroot dynamics the belief vectors do not adhere to the standard notion of convergence as under regular DeGroot dynamics, rather, using this updating rule results in what \cite{amir2021robust} describe as \textit{alternating convergence}. That is to say, rather than one single convergent belief vector, there are two convergent belief vectors, between which the agents alternate.
+Therefore, using the same condition for convergence as regular DeGroot mechanics will result in an infinite loop, as the belief vectors will alternate, ensuring there will always be a difference between the beliefs at $t$ and $t-1$. To this end, the convergence condition is changed somewhat. Rather than comparing the beliefs between $t$ and $t-1$ only, the belief vectors are compared between $t$ and $t-2$, to check whether their difference is 0, or near enough. This is also done for the beliefs at $t-1$ and $t-3$ to check whether both of the alternating belief vector have converged. As long as convergence has not occurred for both belief vectors the agents the process keeps repeating.
+
 \subsubsection{Alternative}
 
+The alternate $\varepsilon$-DeGroot dynamics work similarly to the standard $\varepsilon$-DeGroot updating rule, as described in [REF] \todo{ref naar alt $\varepsilon$}. Similarly, it also displays \textit{alternating} convergence, rather than the more standard notion of converge. Therefore, in order to properly detect when the network has converged the same conditions for converge are used as with the standard $\varepsilon$-DeGroot mechanics.
+
 \subsection{Private Belief}
+
+Another updating rule implemented allowed each individual agent to account for a private, constant, belief when updating their opinion. In the chosen implementation this private belief was chosen to be the initial belief at time $t=0$. This way agents will always place some amount of weight on their initial belief. The weight placed on this initial belief is specified by the parameter $\alpha \in [0, 1]$. Converging a network using this updating rule, follows the same process as regular DeGroot mechanics, i.e. repeatedly applying the updating rule until the belief vector no longer changes between iterations. As this updating method results in the more standard notion of convergence, opposed to \textit{alternating} convergence, no further modifications to the convergence procedure were required.
+
+\subsection{Threshold}
+
+Another, minor, modification to the regular DeGroot updating mechanics imposes a threshold on the updating rule, ensuring that agents do not drastically change their opinion in a single updating step. Whenever an agent changes their opinion between two time-steps they can change their opinion by no more than the given threshold, effectively limiting how volatile an agents opinion is, simulating a hesitancy in rapid, drastic, changes in opinion.
 
 \subsection{Variable Weights}
 
 \section{Non-cooperative Agents}
+
+Several implementations for the non-cooperative agents in the network were considered.
+
+The first thought was to give each agent a small chance to become non-cooperative when creating their respective links. However, this would easily disrupt the connectedness of the generated network, as the non-cooperative agents, by definition do not have any incoming links. Any agents added after would lose the guarantee of connectedness, as the non-cooperative agents break the chains. However, this could be worked around by accounting for the already present non-cooperative agents when generating the guaranteed links. However, a more severe downside is how this removes the ability to easily switch between a cooperative and non-cooperative network. Furthermore, this method would not guarantee a non-cooperative agent in the network at any given size, as each agent would randomly be chosen to be non-cooperative.
+
+Therefore, in order to prevent these issues from occurring a different method was chosen. The most important difference is that, where the previous method would choose the non-cooperative agents randomly \textit{during} the network generation process, this method would add them to network \textit{after} the cooperative agents. Furthermore, instead of each agent having a random chance to be non-cooperative, a fixed amount of non-cooperative agents, specified beforehand, is added to the network. For each non-cooperative agent a number of links, to random agents, is created. In order to ensure the presence of these non-cooperative agents in networks of every size the first non-cooperative agents sends a link to the first agent in the network, the second agent sends a link to the second agent in the network, etc. The degree of these non-cooperative agents is determined by the average degree of all cooperative agents in the network, to ensure that they do not have an undue amount of influence over the other agents, or significantly less. Then, after the agents who will receive a link from those non-cooperative agents are determined, their respective indeces are all stored in a list. In order to actually add the non-cooperative agents to the network the network of the desired size is simply taken, and for each non-cooperative agent an empty, i.e. containing only zeroes, is added to the interaction matrix. These rows represent the lack of incoming links to the non-cooperative agents, ensuring they will not update their opinion between time-steps. Subsequently, a column, containing the links to the previously determined agents, is added for each non-cooperative agent. In order then grow the same network by one agent, the original interaction is simply taken again, with the desired amount of additional agents, after which the non-cooperative agents are added anew. As the agents to receive a link from the non-cooperative agents were predetermined, this ensures the structure of the network is retained as the network grows and the non-cooperative agents and their links do not have to be generated from scratch at every network size.
 
 \newpage
 \section{Appendix}
