@@ -74,28 +74,27 @@ As mentioned the chosen implementation has the option to adjust the generation p
 First of all, this method allows for the generation of both directed and undirected networks. The method for generating undirected networks is very similar to the generation of directed networks. In fact, the process is entirely the same, save for one detail. In contrast to the generation of a directed network, where the agents to receive and send a link are chosen independently, and therefore tend to be distinct agents, the generation of an undirected network simply chooses one random agent to both receive and send a link. After all, the only difference between the interaction matrix $\T$ of a directed and undirected network is that the matrix of an undirected is symmetrical, whereas the matrix of an undirected network is asymmetrical. \newline
 Furthermore, when a directed network is created it can be made into an undirected network. This is done by simply taking the element wise maximum between the original matrix and its transpose, effectively mirroring all links in the matrix along the diagonal. \newline
 
-Secondly, there is also the option to increase the degree of the agents to more than the base minimum. Using the default generation results in 
+Secondly, there is also the option to increase the degree of the agents to more than the base minimum. Using the default generation results in nearly half of all agents having only two links, the bare minimum \footnote{In a network where every agent is guaranteed a self-link}, with a quickly dissipating tail on this distribution as demonstrated in figure (\ref{deg:std}). However, when using this option to increase the degree of the network, this distribution is spread out more evenly and is flattened, leading to a more even distribution of degrees, as seen in figure (\ref{deg:inc})
 \begin{figure}[!htbp]
   \centering
   \subfloat[Standard Degree]{\includegraphics[width=0.5\textwidth]{ThesisKI/Images/DegreeUndirectedStd.png}\label{deg:std}}
   \hfill
   \subfloat[Increased Degree]{\includegraphics[width=0.5\textwidth]{ThesisKI/Images/DegreeUndirectedInc.png}\label{deg:inc}}
-  \caption{Degree Distributions}
+  \caption{Degree Distributions Undirected Network}
 \end{figure}
 
 \newpage
 
-The implementation of this increased degree is rolled into the generation of the network to roll this functionality into the iteration of the generation function, preventing the need to repeat this iteration if the degree would be increased after the generation. After the guaranteed connections each agent then gets assigned an additional degree, which is a random number sampled from a given probability distribution, by default $\mathcal{N}(2,1)$. This number is rounded to the nearest integer. Subsequently, a corresponding amount of agents are drawn randomly from the set of \emph{all} agents in the network, and a link is created for those agents. When generating a directed network this procedure, including a random additional degree, occurs twice, once for the incoming degree, once for the outgoing degree. However, for an undirected network this procedure only needs to be executed once, and the chosen agents are used for both the incoming and outgoing link. \newline
-The generation of this additional degree can customized further by providing a different probability function and the corresponding parameters. This allows for the degree to be increased as much as desired, using any probability distribution.\newline
+The procedure for increasing the degree of a network occurs during the generation procedure. During the iteration, each agent samples a random number to increase their degree by, sampled from a given distribution, by default $\mathcal{N}(2,1)$, which was also used to generate figure (\ref{deg:inc}). This number is then rounded to the nearest integer, and, when this integer is positive, the agent will receive this amount of additional links. Once again the agents on the other end of the link are sampled randomly from a uniform distribution, this time over \emph{all} agents, not only over those already present in the network, and the corresponding element in the matrix is then set to one. When this method is used for an undirected network only one number is drawn to increase the degree, however, for a directed network two number are sampled, for both the in-degree and the out-degree.
+The probability distribution, and its respective parameters, from which the degree increase is sampled can be changed to influence the distribution of degree as much as desired.
+\newline
 
-Finally, the probability for self-links in the network can be set as desired. To guarantee that each agent in the network has a self-link this parameter can be set to 1 and, conversely, to ensure no agent \footnote{Except for the first agent, which always receives a self-link to ensure aperiodicity} has a self-link this parameter can simply be set to 0. Any value in between gives each agent that probability to receive a self-link.
-
-Figure \ref{network:random} is an example of an undirected network generated using this method, with increased degree\footnote{Self-links not shown}:
-\begin{center}
+A final option for the customization of the network generation is the probability of a self-link, which can be set at the moment of generation. This sets the probability for each agent to form a link with itself, save for the first agent, which always receives a self-link in order to ensure the aperiodicity of the network.
+\begin{center}\todo{increase font-size}
     \begin{figure}[!htbp]
         \centering
         \includegraphics[width=1.1\textwidth]{ThesisKI/Images/NoneGraphRandom.png}
-        \caption{Average Directed Degree}
+        \caption{Example of Randomly Generated Undirected Network}
         \label{network:random}
     \end{figure}
 \end{center}
@@ -104,7 +103,8 @@ Figure \ref{network:random} is an example of an undirected network generated usi
 
 \subsubsection{Sparse Matrices}
 
-One caveat of the chosen method is the memory usage of matrices. As the interaction matrices are two-dimensional their memory usage increases quadratically as the network size increases. For small network this size this is negligible, however, as the sequences of networks grow towards the thousands of agents this becomes increasingly memory intensive. Therefore, in order to alleviate the intensive memory use of large matrices, the networks are generated as sparse matrices by default \cite{2020SciPy-NMeth}. As the generated network tend to contain only a small fraction of possible links the corresponding arrays will contain mainly zeros. However, it is not the lack of link that is of interest, but rather the presence of one, making all zero entries effectively a waste of space. Sparse matrices are created for this very purpose, increase memory efficiency of large arrays containing an overwhelming majority of empty data. The difference in memory usage is highlighted in figure \ref{generation:memory} below.
+One caveat of the chosen implementation is the memory consumption. As the interaction matrix is two-dimensional its size increases in a polynomial manner. As the wisdom of crowds effects occurs as the network size approaches infinity this poses a problem, with large networks consuming a large amount of memory. In order to circumvent this problem the implementation of the network generation stores the interaction matrix in a sparse format \cite{2020SciPy-NMeth}. As can be seen in figure (\ref{generation:memory}) this decreases the memory consumption to negligible levels, for networks of up to $10,000$ agents, whereas when using a standard, dense, matrix the memory consumption increases rapidly. \newline
+However, generating a network as a sparse matrix is a somewhat slower process than generating the same network as a dense matrix, though both generation processes still run in linear time as can be seen in figures (\ref{generation:time_inc} \& \ref{generation:time_std}),  which show the network generation times for a network with increased degree, and standard degree respectively. Therefore, as the generation of the network needs only be run once, the decrease in memory usage was considered to outweigh the slightly increased run-time, and the sparse generation was chosen as default.
 
 \begin{figure}[!htbp]
     \centering
@@ -121,74 +121,77 @@ One caveat of the chosen method is the memory usage of matrices. As the interact
     \caption{Network generation, \\ memory and time consumption}
 \end{figure}
 
-\newpage
-
-While it is clear from the visualizations that the memory usage of sparse matrices, in this context, is an incredible improvement, it is not entirely without its downsides. As can be seen in figures \ref{generation:time_inc} and \ref{generation:time_std} sparse networks are slower to generate then their dense counterparts. However, the generation time for \emph{both} types still only increases linearly. As the generation time is only a one-time operation this difference can be considered negligible, making generation of networks using sparse networks the most beneficial default option.
-
-\subsection{Fixed Generation}
 
 \section{Belief Initialization}
 
-The method to generate the beliefs of each agent works somewhat similar as the generation of the network itself. It can either be given a number of agents, $n$, for which to generate beliefs, or a pre-existing belief vector and a number of agents by which to grow it. The basis of the generation process is the same as described in [REF]. \newline
-To start an array of $n$ random, zero mean, error terms, $e_i$, is generated, sampled from $\mathcal{N}(0, .75)$ by default. Then the assumed truth of the network $\mu$, which has been sampled from a uniform distribution over $[0, 1]$ at the initial generation of the network, is added to every term. \newline
-However, there is one caveat to the belief generation as described above, namely that the beliefs are to lie on the interval $[0, 1]$. While $\mu$ does indeed lie on this interval, there is no guarantee that the initial beliefs, when generated as described, will too, as it is entirely possible for error terms to be generated that, when summed with $\mu$, will lie outside this interval. \newline
-An initial instinct to would be to simply truncate the generated beliefs, i.e.: whenever the a generated belief exceeds this interval simply set it equal to the closest of either $0$ or $1$. However, as $\mu$ is drawn randomly it can lie arbitrarily close to either of the borders of the interval, which would ensure an unbalanced truncation to one side of the interval, which would cause the mean of the beliefs to shift away from $\mu$, disrupting convergence.\newline
-Therefore, instead of truncating specific beliefs, the entire belief vector was normalized to lie on the interval $[0, 1]$, as follows:
+The generation of the beliefs follows the procedure as discussed in section [REF]. That is to say, the initial opinion of an agent $i$, $\beli{i}{0}$, is generated by adding a random, independently sampled, zero-mean, error term, $e_i$, to the assumed truth of the network. This is implemented by generating an array of length $n$, where each entry is sampled from a zero mean probability distribution, $\mathcal{N}(0, 0.75)$ by default. The assumed truth, $\mu$, is drawn randomly from a uniform distribution on the interval $[0, 1]$, and is added to each entry in this array of error terms. \newline
+However, as mentioned in section [REF] all beliefs are to lie on the interval $[0, 1]$, which is not guaranteed with this method. After all, as $\mu$ is chosen randomly it can lie arbitrarily close to the edges of the interval, allowing for the a very small error term to push the belief outside of the interval. What's more, the probability distribution is continuous, meaning it is even possible for an error term to be larger than $1$.  Therefore, in order to force each belief onto this interval the initial belief vector is value normalized, according to following rule:
 \begin{equation*}
-    \beli{i, \text{norm}}{0} = \frac{\beli{i}{0} - \min(\textbf{p}^{(0)})}{\max(\textbf{p}^{(0)}) - \min(\textbf{p}^{(0)})}
+    \beli{i, \text{norm}}{0} = \frac{\beli{i}{0} - \min(\textbf{p}^{(0)})}{\max(\textbf{p}^{(0)}) - \min(\textbf{p}^{(0)})},
 \end{equation*}
-
-This ensures that none of the initial beliefs will exceed this threshold. Another solution to this problem would be to simply always set $\mu$ to $0.5$ and simply use a uniform distribution on the interval $[-0.5, 0.5]$ to sample the noise terms. However, this limits the choice of probability distributions of the error terms. This alternative method would always require the use of the uniform, or some other bounded distribution, to sample the noise terms. However, with the chosen method any probability function can be used, without any bounds.
+which ensure that the smallest belief in the belief vector is normalized to $0$, the highest belief normalized to $1$, and every other belief will fall somewhere in between. However, as this shift the mean of the belief vector away from $\mu$, $\mu$ itself must undergo the same normalization in order to ensure each belief is still properly generated from this value.
+\newline
 
 \section{Weight Initialization}
 
-While the network generation does create the links between agents and form the structure of the network, it does not initialize the weights on the network. Instead, whenever a link exists between to agents, the corresponding entry is simply set to $1$. However, it may be the case that not every agent places a similar weight on all of it's neighbours, which creates the need for a different weighting scheme. For this purpose, several functions have been created to enable different initialization of the weights in the network. It is important to note that these initialization functions neither delete, nor create, any links in the network, they simply increase or decrease the respective entry in the interaction matrix \T.
+The previous method does instantiate the network, by creating the links between all agents. However, it does not yet place a weight on all of these links, to describe how much weight agents place on the beliefs of others. For this purpose different options to initialize the weights have been determined. These are all applied only on the non-zero entries in the interaction matrix, therefore they do not create any new links, nor do they remove those already existing links, potentially disrupting the connectedness of the network.
 
 \subsection{Uniform}
 
-The first, and default, initialization is the uniform initialization. The uniform initialization assumes that the weight placed on each incoming agent is equal. Therefore it exists not as a separate initialization function but exists simply as a \enquote{non-option}, in that it keeps the weight matrix as-is. That is to say, all weights equal to $1$.
+The first, default, weight initialization is uniform weighting. This simply means that every agent places the exact same weight on the opinions of every other they are connected to. The implementation amounts to simply let the interaction matrix $\T$ remain as is, with a $1$ indicating a link and a $0$ indicating no link.
 
 \subsection{Overlap}
 
-The overlap initialization is based on the idea that agents prefer to receive their information fro mas many different sources as possible, and tend to place less weight on regurgitated information. Therefore the weight an agent $i$ places on each of its neighbouring agents $j$ is based on the overlap between their neighbouring agents. That is to say, when agent $j$ listens to almost all the same agents as $i$, $i$ places less weight on $j$'s opinion as it stems from information it would receive from its other neighbours, anyway. Let the set of neighbouring agents of agent $i$, in the network of size $n$, be denoted as $N_i(n)$. The weight that $i$ places on $j$, based on their overlap will then become:
+The second initialization is based on the idea that an agent prefers to receive information from as many different sources as possible. The weight placed on an agent is therefore proportional to the amount of new information they are able to provide, based on the overlap in neighbours between two agents, where agents' neighbours are those other agents with whom they have a link. The weight initialization is based on the following rule:
 \begin{equation}
-    \T_{ij}(n) = 1 - \alpha \cdot \frac{|N_i(n) \cap N_j(n)|}{|N_i(n)|}
+    \T_{ij}(n) = 1 - \alpha \cdot \frac{|N_i(n) \cap N_j(n)|}{|N_i(n)|},
 \end{equation}
-where $\alpha \in [0, 1]$ is a discount factor to prevent any links being deleted should the neighbouring sets of the two agents completely overlap. This initialization sets the weights between two agents to be 1 minus the fraction of overlap between the two agents. This way, the higher the overlap, and therefore the less unique the provided information, the lower the weight, and vice versa. Again, like the other belief initialization, this does not create or remove links, it is only applied on those entries where there already exists a link.
-
-\newpage
+which essentially subtracts the fraction of overlap between the set of neighbours of agents $i$ and $j$ from the weight that $i$ places on $j$. This fraction is then multiplied with a discount factor $\alpha \in [0, 1)$ to ensure that a link between agents is not deleted in the event that their neighbouring sets perfectly overlap. 
 
 \subsection{Belief}
 
-Another method of initializing the beliefs is based on the idea that agents pay more attention to those agents with a mindset similar to themselves, which can be seen as a form of confirmation bias. This initialization gives a link between any two agents more weight the more similar their opinions are to one another, and vice versa. To do this first a belief matrix, for the network of size $n$, is made  by stacking the belief vector $\textbf{p}$ $n$ times:
+Another method of setting the weights between agents is based on the idea that agents are more willing to pay attention to those around them with the same mindset. The weight that one agent places on another is based on their difference in opinion: the more similar their opinions the more weight they attribute to the other's opinion, and vice versa. First, in order to set the weights this way, the initial belief vector is concatenated with itself $n$ times, to form an $n \times n$ matrix where each column is the belief vector at $t=0$, as follows:
 \begin{equation}
     B(n) = [\textbf{p}^{(0)}(n)]^{n}
 \end{equation}
-which creates an $n \times n$ matrix with the beliefs of each agent along the corresponding row. In order to compute the difference between any two agents' opinions it simply a matter of subtracting its own transpose from this belief matrix.
-The weight that agent $i$ places on agent $j$ using this initialization then becomes:
+
+In order to get the difference in belief between any two agents, the transpose of the matrix formed by concatenating the belief vectors can simply be subtracted from the matrix itself. Then, for every non-zero element in $\T$, the weight is set as the absolute difference in opinion subtracted from 1, as follows:
 \begin{equation}
     \T_{ij}(n) = 1 - \alpha \cdot |B_{ij}(n) - (B^{T})_{ij}(n)|
 \end{equation}
-where $\alpha$ is once again a discount factor to prevent link deletion. In other words the weight that agent $i$ places on $j$ is simply 1 minus their, discounted, difference in opinion.
+
+Again, just as in the overlap initialization, $\alpha$ is a discount factor on the interval $[0, 1)$ to prevent deletion of links, should two connected agents hold perfectly opposed beliefs.
 
 \subsection{Random}
 
-Another method of initializing the weights of the network is to simply generate the the weights randomly. This method generates an $n \times n$ matrix filled with numbers sampled from a given distribution, and corresponding parameters. In order to ensure the weights are applied only to existing links the randomly generated matrix and the interaction matrix $\T$ are multiplied element-wise.
+Another method of initializing the weights of the network is to simply generate the the weights randomly. This method generates an $n \times n$ matrix filled with numbers sampled from a given distribution, and corresponding parameters, a uniform distribution on $[0, 1]$ by default. In order to ensure the weights are applied only to existing links the randomly generated matrix and the interaction matrix $\T$ are multiplied element-wise, as each element of the $\T$ matrix at this point is either $1$ or $0$.
 
 \subsection{Self-links}
 
-While the initialization of self-links is handled perfectly fine by both the uniform and random initialization, the application of initialization, based on overlap and belief, on self-links will have undesirable behaviour. When using the overlap initialization it will always assign the lowest possible weight to a self-link, as the fraction of overlap between the two agents' neighbouring sets will always equal one, as two involved agents are one and the same. Using the belief initialization, however, will have the exact opposite problem, as the difference in opinion between an agent and itself will always be 0, and therefore will always assign a the maximum weight of one to a self-link. In order to circumvent this undesirable behaviour when using these initialization functions, a function was created that randomly assigns weights to any self-links in the network. By default these self-weights are sampled from a normal distribution whose mean and standard deviation are the mean and standard deviation of all weights in the network. This ensures the weights on the self-link are in line with the rest of the weights in the network.
+One final hiccup in the weight initialization are the self-links. When using either uniform or random weights everything works as intended. However, when setting the weight based on either overlap of belief unintended behaviour occurs. Namely, when setting the weights based on overlap, a self-link will always be assigned the lowest possible weight. After all, two identical sets, in this case the overlap between the sets of neighbours of agents $i$ and $i$, will perfectly overlap.
+Conversely, when setting the weights based on beliefs, a self-link will always receive the highest possible weight. After all, the difference in opinion between an agent and themselves will always be $0$. \newline
+In order to circumvent this, when initializing the weights using one of the aforementioned methods, the self-links will be assigned a random weight, sampled from a normal distribution whose mean and standard deviation are taken to be the mean and standard deviation of all other weights in the network. This ensures that the self-links are generated to be more in line with all other weights in the network.
 
 \subsection{Normalization}
 
-While the belief initialization functions allow agents to assign different weight to their neighbours they do not guarantee the necessary condition for convergence, namely that the interaction matrix \textbf{T} is row stochastic, meaning that the values along its rows sum to one. In order to ensure this property a function was created that normalizes the matrix as follows:
+Finally, in order to achieve convergence, it is necessary that $\T$ is row-stochastic, meaning its elements sum to one, row-wise. In order to ensure this condition, after the weights have been initialized, the matrix is normalized row-wise as follows:
 \begin{equation}
-    \T_{ij, norm} = \frac{\T_{ij}}{\sum_{j}\T_{ij}}
+    \T_{ij, norm}(n) = \frac{\T_{ij}(n)}{\sum_{j}\T_{ij}(n)}
 \end{equation}
 
-In other words, each entry is simply divided by the sum of all weights in the corresponding rows. While this does not preserve the values given to the weights by the initialization function, it does preserve their comparative values, which is the most important aspect.
+In other words, each entry is simply divided by the sum of all weights in the corresponding rows. While this does not preserve the exact values given to the weights by the initialization function, it does preserve their values in relation to the other weights in the row, which is the most important.
 
 \newpage
+
+\section{Non-cooperative Agents}
+
+Now, having the ability to generate a cooperative network of a given size, what remains is the ability to add non-cooperative agents without disrupting the benefits obtained by the chosen method of network generation.
+Furthermore the implementation has to have the ability to switch a network between cooperative and non-cooperative at will, to allow for proper comparison between those networks.
+Therefore the generation of the non-cooperative agents occurs after the cooperative part of the network has already been generated. Iterating over the given number of non-cooperative agents, each of them receives a random selection of agents with whom they will have a link, the number of which will be equal to the average degree of the network, at its full size.
+In addition to the randomly selected agents each non-cooperative agent is guaranteed to receive a link to one of the first five agents in the network. This is done to make sure that the non-cooperative agents will still have links to others, even when the observed network is relatively small.
+
+The links of these non-cooperative agents are then stored to allow them to be added to a network of any size. In order to add them to any network in the sequence, regardless of size, first empty rows are concatenated to the interaction matrix. After all, what distinguishes non-cooperative agents from their cooperative counterparts is their lack of incoming links, which is expressed by empty rows in the interaction matrix. After the empty rows are added, the respective columns are added, representing those agents who listen to non-cooperative agents. The regular interaction matrix of size $n \times n$ is therefore extended to a matrix of size $n+m \times n+m$, where $m$ is the number of non-cooperative agents.
+An example of a resulting non-cooperative network can be seen in figure (), below, where the non-cooperative agents are labeled in red.
 
 \section{Updating Rules \& Convergence}
 
@@ -232,14 +235,6 @@ Another updating rule implemented allowed each individual agent to account for a
 Another, minor, modification to the regular DeGroot updating mechanics imposes a threshold on the updating rule, ensuring that agents do not drastically change their opinion in a single updating step. Whenever an agent changes their opinion between two time-steps they can change their opinion by no more than the given threshold, effectively limiting how volatile an agents opinion is, simulating a hesitancy in rapid, drastic, changes in opinion.
 
 \subsection{Variable Weights}
-
-\section{Non-cooperative Agents}
-
-Several implementations for the non-cooperative agents in the network were considered.
-
-The first thought was to give each agent a small chance to become non-cooperative when creating their respective links. However, this would easily disrupt the connectedness of the generated network, as the non-cooperative agents, by definition do not have any incoming links. Any agents added after would lose the guarantee of connectedness, as the non-cooperative agents break the chains. However, this could be worked around by accounting for the already present non-cooperative agents when generating the guaranteed links. However, a more severe downside is how this removes the ability to easily switch between a cooperative and non-cooperative network. Furthermore, this method would not guarantee a non-cooperative agent in the network at any given size, as each agent would randomly be chosen to be non-cooperative.
-
-Therefore, in order to prevent these issues from occurring a different method was chosen. The most important difference is that, where the previous method would choose the non-cooperative agents randomly \textit{during} the network generation process, this method would add them to network \textit{after} the cooperative agents. Furthermore, instead of each agent having a random chance to be non-cooperative, a fixed amount of non-cooperative agents, specified beforehand, is added to the network. For each non-cooperative agent a number of links, to random agents, is created. In order to ensure the presence of these non-cooperative agents in networks of every size the first non-cooperative agents sends a link to the first agent in the network, the second agent sends a link to the second agent in the network, etc. The degree of these non-cooperative agents is determined by the average degree of all cooperative agents in the network, to ensure that they do not have an undue amount of influence over the other agents, or significantly less. Then, after the agents who will receive a link from those non-cooperative agents are determined, their respective indeces are all stored in a list. In order to actually add the non-cooperative agents to the network the network of the desired size is simply taken, and for each non-cooperative agent an empty, i.e. containing only zeroes, is added to the interaction matrix. These rows represent the lack of incoming links to the non-cooperative agents, ensuring they will not update their opinion between time-steps. Subsequently, a column, containing the links to the previously determined agents, is added for each non-cooperative agent. In order then grow the same network by one agent, the original interaction is simply taken again, with the desired amount of additional agents, after which the non-cooperative agents are added anew. As the agents to receive a link from the non-cooperative agents were predetermined, this ensures the structure of the network is retained as the network grows and the non-cooperative agents and their links do not have to be generated from scratch at every network size.
 
 \newpage
 \section{Appendix}
