@@ -46,11 +46,11 @@ In order to allow for proper analysis of the DeGroot mechanics a method to gener
 
 \subsubsection{Default Case}
 In the default, most basic, case this function simply takes the desired number of agents, $n$ as input. Other, optional, parameters can be provided to customize the desired network and will be discussed in detail at the relevant time.
-To start, an empty $n\times n$ array \cite{2020NumPy-Array}, i.e. containing solely zeroes, is created, which serves as a blank slate for the interaction matrix $\T$ of the network\hl{, which is all that is required to describe a network as discussed in [REF].}\todo{Possibly unnecessary}
+To start, an empty $n\times n$ array \cite{2020NumPy-Array}, i.e. containing solely zeroes, is created, which serves as a blank slate for the interaction matrix $\T$ of the network.
 Subsequently the function will iteratively add the links for every agent in the network, in order to ensure the generated network is fully connected at every size. \newline
 In this iteration there is one special case, namely, the very first agent. To ensure aperiodicity, as discussed in [REF], and therefore convergence, the very first agent is guaranteed to receive a self-link. As this creates a cycle of length one, aperiodicity is guaranteed. \newline
 
-Every subsequent agent, when generating a directed network, will be guaranteed to both receive and send one link. When generating an undirected network each agent is guaranteed to have one link, which is both incoming and outgoing. This guarantees that the network of size $n$ will be fully connected. However, as the interest lies in sequences of networks, all of which need to be convergent, this condition needs to be met by every network in the sequence of size $n^{\prime} < n$, not only by the network of size $n$. Therefore, these guaranteed links will be sent to, and by, an earlier agent in the network, that is to say that the guaranteed links of an agent $k$ can only be sent to and received by any agent $m < k$. This guarantees the strong connectedness of the network, at every size, which can be proven inductively [REF]. This also holds for an undirected network, where the only difference is that the agents receiving and sending a link are one and the same. The specific agents on the other end of these guaranteed links are sampled randomly from a uniform distribution over the interval of agents already present in the network. \newline
+Every subsequent agent, when generating a directed network, will be guaranteed to both receive and send one link. When generating an undirected network each agent is guaranteed to have one link, which is both incoming and outgoing. This guarantees that the network of size $n$ will be fully connected. However, as the interest lies in sequences of networks, all of which need to be convergent, this condition needs to be met by every network in the sequence of size $n^{\prime} < n$, not only by the network of size $n$. Therefore, these guaranteed links will be sent to, and by, an earlier agent in the network, that is to say that the guaranteed links of an agent $k$ can only be sent to and received by any agent $m < k$. This guarantees the strong connectedness of the network, at every size, which can be proven inductively, see section \ref{proof:conn}. This also holds for an undirected network, where the only difference is that the agents receiving and sending a link are one and the same. The specific agents on the other end of these guaranteed links are sampled randomly from a uniform distribution over the interval of agents already present in the network. \newline
 
 Therefore, as this method of generation not only guarantees connectedness in the total network, but also at every smaller size of the network, this returned network can also be considered a sequence of networks. To access a network of a specific size in this sequence, one would only need to take the rows and columns up to that size to obtain the specific network. This ensures that the network and its links stay constant between sizes, allowing for proper comparison of different networks in the sequence. Finally, this function is also capable of growing an existing network: when a matrix and a positive integer $m$ are provided, the function will grow this existing matrix by adding $m$ rows and columns, one for each agent, whose links are determined in the same way as described earlier.\newline
 
@@ -105,7 +105,7 @@ A final option for the customization of the network generation is the probabilit
 
 One caveat of the chosen implementation is the memory consumption. As the interaction matrix is two-dimensional its size increases in a polynomial manner. As the wisdom of crowds effects occurs as the network size approaches infinity this poses a problem, with large networks consuming a large amount of memory. In order to circumvent this problem the implementation of the network generation stores the interaction matrix in a sparse format \cite{2020SciPy-NMeth}. As can be seen in figure (\ref{generation:memory}) this decreases the memory consumption to negligible levels, for networks of up to $10,000$ agents, whereas when using a standard, dense, matrix the memory consumption increases rapidly. \newline
 However, generating a network as a sparse matrix is a somewhat slower process than generating the same network as a dense matrix, though both generation processes still run in linear time as can be seen in figures (\ref{generation:time_inc} \& \ref{generation:time_std}),  which show the network generation times for a network with increased degree, and standard degree respectively. Therefore, as the generation of the network needs only be run once, the decrease in memory usage was considered to outweigh the slightly increased run-time, and the sparse generation was chosen as default.
-
+\todo{increase font-size}
 \begin{figure}[!htbp]
     \centering
     \subfloat[]{\label{generation:memory}\includegraphics[scale=.45]{ThesisKI/Images/Memory.png}}
@@ -143,22 +143,22 @@ The first, default, weight initialization is uniform weighting. This simply mean
 \subsection{Overlap}
 
 The second initialization is based on the idea that an agent prefers to receive information from as many different sources as possible. The weight placed on an agent is therefore proportional to the amount of new information they are able to provide, based on the overlap in neighbours between two agents, where agents' neighbours are those other agents with whom they have a link. The weight initialization is based on the following rule:
-\begin{equation}
+\begin{equation*}
     \T_{ij}(n) = 1 - \alpha \cdot \frac{|N_i(n) \cap N_j(n)|}{|N_i(n)|},
-\end{equation}
+\end{equation*}
 which essentially subtracts the fraction of overlap between the set of neighbours of agents $i$ and $j$ from the weight that $i$ places on $j$. This fraction is then multiplied with a discount factor $\alpha \in [0, 1)$ to ensure that a link between agents is not deleted in the event that their neighbouring sets perfectly overlap. 
 
 \subsection{Belief}
 
 Another method of setting the weights between agents is based on the idea that agents are more willing to pay attention to those around them with the same mindset. The weight that one agent places on another is based on their difference in opinion: the more similar their opinions the more weight they attribute to the other's opinion, and vice versa. First, in order to set the weights this way, the initial belief vector is concatenated with itself $n$ times, to form an $n \times n$ matrix where each column is the belief vector at $t=0$, as follows:
 \begin{equation}
-    B(n) = [\textbf{p}^{(0)}(n)]^{n}
+    B(n) = [\textbf{p}^{(0)}(n)]^{n},
 \end{equation}
 
 In order to get the difference in belief between any two agents, the transpose of the matrix formed by concatenating the belief vectors can simply be subtracted from the matrix itself. Then, for every non-zero element in $\T$, the weight is set as the absolute difference in opinion subtracted from 1, as follows:
-\begin{equation}
-    \T_{ij}(n) = 1 - \alpha \cdot |B_{ij}(n) - (B^{T})_{ij}(n)|
-\end{equation}
+\begin{equation*}
+    \T_{ij}(n) = 1 - \alpha \cdot |B_{ij}(n) - (B^{T})_{ij}(n)|,
+\end{equation*}
 
 Again, just as in the overlap initialization, $\alpha$ is a discount factor on the interval $[0, 1)$ to prevent deletion of links, should two connected agents hold perfectly opposed beliefs.
 
@@ -175,9 +175,9 @@ In order to circumvent this, when initializing the weights using one of the afor
 \subsection{Normalization}
 
 Finally, in order to achieve convergence, it is necessary that $\T$ is row-stochastic, meaning its elements sum to one, row-wise. In order to ensure this condition, after the weights have been initialized, the matrix is normalized row-wise as follows:
-\begin{equation}
-    \T_{ij, norm}(n) = \frac{\T_{ij}(n)}{\sum_{j}\T_{ij}(n)}
-\end{equation}
+\begin{equation*}
+    \T_{ij, norm}(n) = \frac{\T_{ij}(n)}{\sum_{j}\T_{ij}(n)},
+\end{equation*}
 
 In other words, each entry is simply divided by the sum of all weights in the corresponding rows. While this does not preserve the exact values given to the weights by the initialization function, it does preserve their values in relation to the other weights in the row, which is the most important.
 
@@ -190,8 +190,40 @@ Furthermore the implementation has to have the ability to switch a network betwe
 Therefore the generation of the non-cooperative agents occurs after the cooperative part of the network has already been generated. Iterating over the given number of non-cooperative agents, each of them receives a random selection of agents with whom they will have a link, the number of which will be equal to the average degree of the network, at its full size.
 In addition to the randomly selected agents each non-cooperative agent is guaranteed to receive a link to one of the first five agents in the network. This is done to make sure that the non-cooperative agents will still have links to others, even when the observed network is relatively small.
 
-The links of these non-cooperative agents are then stored to allow them to be added to a network of any size. In order to add them to any network in the sequence, regardless of size, first empty rows are concatenated to the interaction matrix. After all, what distinguishes non-cooperative agents from their cooperative counterparts is their lack of incoming links, which is expressed by empty rows in the interaction matrix. After the empty rows are added, the respective columns are added, representing those agents who listen to non-cooperative agents. The regular interaction matrix of size $n \times n$ is therefore extended to a matrix of size $n+m \times n+m$, where $m$ is the number of non-cooperative agents.
-An example of a resulting non-cooperative network can be seen in figure (), below, where the non-cooperative agents are labeled in red.
+The links of these non-cooperative agents are then stored to allow them to be added to a network of any size. In order to add them to any network in the sequence, regardless of size, first empty rows are concatenated to the interaction matrix. After all, what distinguishes non-cooperative agents from their cooperative counterparts is their lack of incoming links, expressed by empty rows in the interaction matrix. After the empty rows are added, the respective columns are added, representing those agents who listen to non-cooperative agents. The regular interaction matrix of size $n \times n$ is therefore extended to a matrix of size $n+m \times n+m$, where $m$ is the number of non-cooperative agents.
+An example of a resulting non-cooperative network can be seen in figure (\ref{network:noncoop}), below, where the non-cooperative agents are labeled in red.
+
+\begin{center}\todo{increase font-size}
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=1\textwidth]{ThesisKI/Images/NonCoopGraph.png}
+        \caption{Non-cooperative network, $n=50, m=3$}
+        \label{network:noncoop}
+    \end{figure}
+\end{center}
+
+
+\newpage
+\section{Appendix}
+\subsection{Proof of (strong) connectedness}
+\label{proof:conn}
+\textbf{Base Case:} \newline
+Let $S_1$ be a random social network of 1 agent, generated using the method described in \ref{generation:random}.
+S is guaranteed to be fully connected, as the first agent in a network always receives a self-link.\newline
+
+\textbf{Induction Hypothesis:}\newline
+Let $S_n$ be an arbitrary, strongly connected, randomly generated network, obtained by the method described in \ref{generation:random}. Now let $S_{n+1}$ be the network that is obtained by growing the network $S_n$ by one agent. We now want to prove that if $S_{n+1}$ is grown from $S_n$ using the method from \ref{generation:random}, $S_{n+1}$ is also strongly connected.\newline
+
+To grow the network $S_n$ by one agent, the agent $n+1$ is added to the network, with two guaranteed links, one incoming and one outgoing. Let the $i$ and $j$ be the arbitrary agents involved in these links, respectively. By the generation procedure outlined in \ref{generation:random}, these agents are guaranteed to be present in $S_n$. However, by our induction hypothesis we now that $S_n$ is strongly connected, therefore there exists a directed path from $i$ and $j$ to any other agent in the network. Therefore, as agent $n+1$ has an incoming link from agent $i$, there exists an incoming path from any agent in the network to $n+1$, and, furthermore, as $n+1$ has an outgoing link to agent $j$, there also exists an outgoing path to any agent in the network. Therefore, as there exists a directed path to any agent in the network from agent $n+1$, $S_{n+1}$ must be strongly connected.\newline
+Therefore, as $S_n$ and $S_{n+1}$ were arbitrary networks, it must be the case that any network generated using this method must be strongly connected.\newline
+
+\bibliographystyle{apalike}
+\bibliography{references.bib}
+
+\newpage
+\end{document}
+
+\newpage
 
 \section{Updating Rules \& Convergence}
 
@@ -235,23 +267,3 @@ Another updating rule implemented allowed each individual agent to account for a
 Another, minor, modification to the regular DeGroot updating mechanics imposes a threshold on the updating rule, ensuring that agents do not drastically change their opinion in a single updating step. Whenever an agent changes their opinion between two time-steps they can change their opinion by no more than the given threshold, effectively limiting how volatile an agents opinion is, simulating a hesitancy in rapid, drastic, changes in opinion.
 
 \subsection{Variable Weights}
-
-\newpage
-\section{Appendix}
-\subsection{Proof of (strong) connectedness}
-
-\textbf{Base Case:} \newline
-Let $S_1$ be a random social network of 1 agent, generated using the method described in \ref{generation:random}.
-S is guaranteed to be fully connected, as the first agent in a network always receives a self-link.\newline
-
-\textbf{Induction Hypothesis:}\newline
-Let $S_n$ be an arbitrary, strongly connected, randomly generated network, obtained by the method described in \ref{generation:random}. Now let $S_{n+1}$ be the network that is obtained by growing the network $S_n$ by one agent. We now want to prove that if $S_{n+1}$ is grown from $S_n$ using the method from \ref{generation:random}, $S_{n+1}$ is also strongly connected.\newline
-
-To grow the network $S_n$ by one agent, the agent $n+1$ is added to the network, with two guaranteed links, one incoming and one outgoing. Let the $i$ and $j$ be the arbitrary agents involved in these links, respectively. By the generation procedure outlined in \ref{generation:random}, these agents are guaranteed to be present in $S_n$. However, by our induction hypothesis we now that $S_n$ is strongly connected, therefore there exists a directed path from $i$ and $j$ to any other agent in the network. Therefore, as agent $n+1$ has an incoming link from agent $i$, there exists an incoming path from any agent in the network to $n+1$, and, furthermore, as $n+1$ has an outgoing link to agent $j$, there also exists an outgoing path to any agent in the network. Therefore, as there exists a directed path to any agent in the network from agent $n+1$, $S_{n+1}$ must be strongly connected.\newline
-Therefore, as $S_n$ and $S_{n+1}$ were arbitrary networks, it must be the case that any network generated using this method must be strongly connected.\newline
-
-\bibliographystyle{apalike}
-\bibliography{references.bib}
-
-\newpage
-\end{document}
