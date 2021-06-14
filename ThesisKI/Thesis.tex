@@ -466,7 +466,9 @@ which ensure that the smallest belief in the belief vector is normalized to $0$,
 \newline
 
 \subsection{Weight Initialization}
-The \texttt{generate\_network} function in Section \ref{generation:random} instantiate the network by creating the edges between the agents. However, it does not yet place a weight on all of these links, to describe how much value agents assign to the beliefs of others. For this purpose different options to initialize the weights have been determined. These are all applied only on the non-zero entries in the interaction matrix, therefore they do not create any new links, nor do they remove those already existing links, potentially disrupting the connectedness of the network. However, it is important to note that the weight initialization functions do not yet guarantee the interaction matrix to be row-stochastic, as mentioned in Section \ref{interaction:matrix}, therefore the function \texttt{normalize\_weights} was made, which will be discussed in more detail in Section \ref{weights:normalization}
+The \texttt{generate\_network} function in Section \ref{generation:random} instantiate the network by creating the edges between the agents. However, it does not yet place a weight on all of these links, to describe how much value agents assign to the beliefs of others. For this purpose different options to initialize the weights have been determined. These are all applied only on the non-zero entries in the interaction matrix, therefore they do not create any new links, nor do they remove those already existing links, potentially disrupting the connectedness of the network. 
+
+\noindent Finally, it is important to note that the weight initialization functions do not yet guarantee the interaction matrix to be row-stochastic, as mentioned in Section \ref{interaction:matrix}, therefore the function \texttt{normalize\_weights} was made, which will be discussed in more detail in Section \ref{weights:normalization}
 
 \subsubsection{Uniform}
 
@@ -523,7 +525,7 @@ Finally, in order to achieve convergence, it is necessary that $\T$ is row-stoch
 
 \noindent First it is important to note the representation of non-cooperative agents in the interaction matrix $\T$. We assume a non-cooperative agent to be an agent that does not change its opinion, while still sharing its opinion with their neighbouring agents. They can therefore simply be represented in the matrix as an empty row, save for the element on the diagonal, as this ensures the agent represented by this specific column receives no information from any agent but themselves, causing them to never change their opinion.
 
-\noindent Now, to ensure that the benefits of the \texttt{generate\_network} function, as described in Section \ref{generation:random}, are not lost upon addition of the non-cooperative agents, and to ensure any network in the sequence generated can be made non-cooperative, the non-cooperative agents are not added directly into the network. Rather, for each non-cooperative the agents with whom they share their opinion, chosen randomly from all $n$ agents, are stored. Additionally, each non-cooperative agent is guaranteed to receive a link to one of the first five agents on the network, ensuring they will be present in smaller networks, even when their randomly assigned agents all happen to be among the last agents added to the network.
+\noindent Now, to ensure that the benefits of the \texttt{generate\_network} function, as described in Section \ref{generation:random}, are not lost upon addition of the non-cooperative agents, and to ensure any network in the sequence generated can be made non-cooperative, the non-cooperative agents are not added directly into the network. Rather, for each non-cooperative the agents with whom they share their opinion, who are chosen randomly from all $n$ agents, are saved. Additionally, each non-cooperative agent is guaranteed to receive a link to one of the first five agents on the network, ensuring they will be present in smaller networks, even when their randomly assigned agents all happen to be among the last agents added to the network.
 
 \noindent The links of these non-cooperative agents are then stored to allow them to be added to a network of any size. In order to add them to any network in the sequence, regardless of size, first empty rows are concatenated to the interaction matrix. After all, what distinguishes non-cooperative agents from their cooperative counterparts is their lack of incoming links, expressed by empty rows in the interaction matrix. After the empty rows are added, the respective columns are added, representing those agents who listen to non-cooperative agents. The regular interaction matrix of size $n \times n$ is therefore extended to a matrix of size $(n+m) \times (n+m)$, where $m$ is the number of non-cooperative agents.
 An example of a resulting non-cooperative network can be seen in Figure \ref{network:noncoop}, where the non-cooperative agents are labeled in red.
@@ -531,7 +533,7 @@ An example of a resulting non-cooperative network can be seen in Figure \ref{net
 \begin{center}\todo{increase font-size}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=1\textwidth]{ThesisKI/Images/NonCoopGraph.png}
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/NonCoopGraph.png}
         \caption{Non-cooperative network, $n=50, m=3$}
         \label{network:noncoop}
     \end{figure}
@@ -593,6 +595,8 @@ The results in the following section are all obtained from networks randomly gen
 
 \noindent Finally, not every updating rule showed uniform convergence. That is to say, the agents did not necessarily adopt the same opinion at the time of convergence for every updating rule. Whenever it was the case that the standard deviation of the belief vector at convergence did not equal $0$, the convergent belief was taken to be the mean of the belief vector.
 
+\newpage
+
 \section{Cooperative Networks}
 
 As can be seen in Figure \ref{coop:compare}, in a cooperative network all updating rule behave quite similar. The convergent belief differs the most for smaller network sizes. However, as the network size increases this difference dissipates, and the convergent beliefs become more and more similar, both to the other updating rules \emph{and} the assumed truth of the model.
@@ -619,15 +623,6 @@ As can be seen in Figure \ref{coop:compare}, in a cooperative network all updati
     \caption{Network generation, \\ memory and time consumption}
 \end{figure}
 
-\begin{center}
-    \begin{figure}[!htbp]
-        \centering
-        \includegraphics[width=1.2\textwidth]{ThesisKI/Images/WisdomCompare0.png}
-        \caption{Convergence Behaviour Threshold Updating}
-        \label{coop:compare}
-    \end{figure}
-\end{center}
-
 \newpage
 
 \section{Non-cooperative networks, $n=1$}
@@ -638,14 +633,23 @@ Where the different updating rules behaved in a similar fashion as the regular D
 
 \noindent Finally, the updating time for both the regular and the thresholded DeGroot mechanics behave nearly identical, and both display a significant increase in convergence time, whereas the other three updating rules do not appear to show significantly slower convergence. Furthermore, where it decreased as the network grew in a fully cooperative network, the convergence time only increases as the network grows in the presence of a non-cooperative agent. This increase in convergence time can be explained by the presence of the single non-cooperative agent, whose influence has to spread throughout the entire network, taking more and more time to reach every agent as the network size increases. Furthermore, this appears to be a non-factor for the other updating rules, where the non-cooperative agent is not nearly as formative, or even formative at all, for the convergent opinion, making it so that it does not significantly impact the convergence time as a result.
 
-\begin{center}
-    \begin{figure}[!htbp]
-        \centering
-        \includegraphics[width=1.2\textwidth]{ThesisKI/Images/WisdomCompare1.png}
-        \caption{Convergence Behaviour Non-cooperative Network, $n=1$}
-        \label{noncoop1:compare}
-    \end{figure}
-\end{center}
+\begin{figure}[!htbp]
+    \centering
+    \subfloat[]{\label{generation:memory}\includegraphics[scale=.45]{ThesisKI/Images/convergence1.png}}
+    
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{generation:time_inc}\includegraphics[scale=.4]{ThesisKI/Images/time1.png}}
+    \end{minipage}%
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{generation:time_std}\includegraphics[scale=.4]{ThesisKI/Images/distance1.png}}
+    \end{minipage}\par\medskip
+    \centering
+    \subfloat[]{\label{generation:memory}\includegraphics[scale=.45]{ThesisKI/Images/std1.png}}
+    
+    \caption{Network generation, \\ memory and time consumption}
+\end{figure}
 
 \newpage
 
@@ -657,18 +661,28 @@ Finally, in networks with multiple non-cooperative agents there is once again a 
 
 \noindent Finally, while still significantly higher than in a fully cooperative network, the convergence time is shorter than in the presence of only one non-cooperative agent, for both the regular and thresholded DeGroot mechanics. As the number of non-cooperative in the network increases so too does their combined influence, reducing the time it takes for them to influence all cooperative agents. All the other three updating rules are still unaffected in their convergence time, as the influence of the non-cooperative agents on their updating process is very limited.
 
-\begin{center}
-    \begin{figure}[!htbp]
-        \centering
-        \includegraphics[width=1.2\textwidth]{ThesisKI/Images/WisdomCompare2.png}
-        \caption{Convergence Behaviour Non-cooperative Network, $n>1$}
-        \label{noncoop+:compare}
-    \end{figure}
-\end{center}
+\begin{figure}[!htbp]
+    \centering
+    \subfloat[]{\label{generation:memory}\includegraphics[scale=.45]{ThesisKI/Images/convergence2.png}}
+    
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{generation:time_inc}\includegraphics[scale=.4]{ThesisKI/Images/time2.png}}
+    \end{minipage}%
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{generation:time_std}\includegraphics[scale=.4]{ThesisKI/Images/distance2.png}}
+    \end{minipage}\par\medskip
+    \centering
+    \subfloat[]{\label{generation:memory}\includegraphics[scale=.45]{ThesisKI/Images/std2.png}}
+    
+    \caption{Network generation, \\ memory and time consumption}
+\end{figure}
 
 \newpage
 
-\chapter{Conclusion}
+\chapter{Conclusion and Future Work}
+\section{Conclusion}
 
 The goal of the thesis was to examine the behaviour of social networks where agents update their opinions using the DeGroot mechanics, as discussed in Section [REF], and the emergent \emph{Wisdom of Crowds} effect that arises from this updating rule. More specifically, the goal was to examine the influence of any non-cooperative agents, those who refuse to change their opinion, on this effect, and how variations of the updating rule could provide a more robust updating process, more resilient to non-cooperative agents in the network. Five variations on the DeGroot mechanics, described in more detail in Section [REF], were implemented and compared in three different variations of networks; fully cooperative networks, where every agent changes their opinion; non-cooperative networks where there is only one single agent who does not change its opinion; and finally non-cooperative networks with multiple non-cooperative agents. 
 
@@ -680,7 +694,7 @@ The goal of the thesis was to examine the behaviour of social networks where age
 
 \noindent All in all, the $\varepsilon$-DeGroot variations and private belief updating mechanics are successful in making social networks more resilient to the presence of non-cooperative agents, where the thresholded DeGroot rule falls short and agents still end up adopting the opinions of the non-cooperative agents. However, these methods are not infallible, as they lose a powerful effect exhibited by the standard DeGroot mechanics. Namely, while these updating rules still converge, it is no longer the case that every agent ends up holding the same opinion, but rather, each agent adopts a somewhat different opinion from the others.
 
-\chapter{Future Work}
+\section{Future Work}
 
 While interesting results have come forward in this thesis there is still room for further work, as it would be desirable to find a variation on the updating rule still providing increased resilience towards non-cooperative agents, while also allowing for (more) uniform convergence.
 
