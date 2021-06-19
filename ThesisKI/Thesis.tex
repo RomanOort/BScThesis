@@ -200,6 +200,13 @@ Science Park 904\\
 
 \thispagestyle{empty}
 
+
+\newpage
+\thispagestyle{empty}
+\subsubsection{Abstract}
+
+\noindent \textbf{\textit{The DeGroot model \parencite{degroot1974concensus} is one of the foremost models in the field of social learning, that attempts to model the beliefs of individuals and how these change over time through interaction \parencite{reed2010sociallearning}. One of the most important properties of the DeGroot model is that, as enough time passes, all involved agents eventually reach a consensus, adopting the same belief. Furthermore, this consensus eventually becomes equal to the assumed truth as more and more agents participate, which \cite{golub2010naive} dubbed the} Wisdom of Crowds \textit{effect. However this effect is fragile, and can be canceled by the presence of a single non-cooperative agent, who refuses to change their opinion \cite{amir2021robust}. In order to limit the effects of these non-cooperative agents several variations on the original DeGroot model were examined. Of these variations the private belief mode \parencite{friedkin1990private} and the $\varepsilon$-DeGroot model \parencite{amir2021robust}, were most effective in limiting the influence of these non-cooperative agents, though not perfect, as instead of consensus some degree of polarization occurred.}} 
+
 \newpage
 
 \pagenumbering{arabic}
@@ -209,22 +216,38 @@ Science Park 904\\
 
 \chapter{Introduction}
 
-The beliefs of individuals, and how these change over time and through interaction with others, has long been a subject of interest in many fields of research, studying different aspects of human behaviour \parencite{reed2010sociallearning}. In fact, the evolution of beliefs in groups affects nearly everything is something that impacts nearly everything, ranging from marketing campaigns to politics. The formal field of study regarding this subject is called \emph{social learning}, which strives to model how individuals change their beliefs through interaction with other, with one of the most prominent models being the DeGroot model \parencite{degroot1974concensus}. 
+The beliefs of individuals, and how these change over time and through interaction with others, has long been a subject of interest in many fields of research, studying different aspects of human behaviour \parencite{reed2010sociallearning}. In fact, the evolution of beliefs in groups affects nearly everything, ranging from marketing campaigns to politics. The formal field of study regarding this subject is called \emph{social learning}, and it strives to model how individuals change their beliefs through interaction with other, with one of the most prominent models being the DeGroot model \parencite{degroot1974concensus}. 
 
-\noindent This model shows how agents in a social network, all interacting with one another and exchanging information, will, over time, reach a consensus and eventually all adopt the same belief, regardless of their initial convictions. Furthermore, \cite{golub2010naive} showed that using this model, as the network grows sufficiently large, not only reaches consensus, but that this consensus also tends towards the assumed truth, a so-called \emph{Wisdom of Crowds} effect.
+\noindent In this model, agents are assumed to be embedded in a social network, all interacting with one another and exchanging information. These agents will, over time, reach a consensus and eventually all adopt the same belief, regardless of their initial convictions. Furthermore, \cite{golub2010naive} showed that using this model, as the network grows sufficiently large, the agents not only reach consensus, but that this consensus also tends towards the assumed truth, a so-called \emph{Wisdom of Crowds} effect.
 
 \noindent As the amount of misinformation has increased over the last years, influencing many people, this concept has also made its way into the field of social learning, in the form of non-cooperative agents \parencite{amir2021robust}, agents that do not change their opinion, while still sharing it with others. In fact, \cite{amir2021robust} showed that even a single non-cooperative agent is sufficient to disturb this \emph{Wisdom of Crowds} effect.
 
-\noindent The goal of the thesis is, therefore, to examine different variations of the DeGroot model and to see whether they are able to provide a more \emph{robust} \parencite{amir2021robust} updating procedure for social networks, capable of exhibiting this \emph{Wisdom of Crowds} effect, regardless of the presence of any non-cooperative agents. Perhaps providing some sense of how the effects of misinformation outside of the formal research field can be mitigated, if not prevented entirely.
+\noindent The goal of the thesis is, therefore, to examine different variations of the DeGroot model and to see whether they are able to provide a more \emph{robust} \parencite{amir2021robust} updating procedure for social networks, capable of exhibiting the \emph{Wisdom of Crowds} effect, regardless of the presence of non-cooperative agents, perhaps providing some sense of how the effects of misinformation outside of the formal research field can be mitigated, if not prevented entirely.
 
-\chapter{Literature Review}
+\noindent To this end we created a method to generate these social networks from scratch, randomly, alongside the aforementioned DeGroot model, and several variations on this model to. Using these implementations the behaviour of these social networks, and how this changes in the presence of non-cooperative agents, can be analyzed.
+
+\noindent The basis of the thesis is formed by this DeGroot model, and the convergence of networks under this model \parencite{degroot1974concensus}, which was expanded upon by \cite{jackson2010social}, demonstrating the \emph{Wisdom of Crowds} effect as these networks grow. Variations on the DeGroot model have also been created, some created specifically to mitigate the effects of these non-cooperative agents \parencite{amir2021robust}, other to improve on some aspects they found to be lacking in the original model. One such example are the model by \cite{chatterjee1977stochastic} and \cite{demarzo2003changing} which allow the weights in the network to change over time, instead of remaining fixed, as in the standard model.
+
+\noindent Finally, there exists a model of social learning that is altogether different from the DeGroot model, called \emph{Bayesian} learning \parencite{GALE2003329}. Where the DeGroot model is considered to be naive, insofar that agents simply update their opinions to whatever they get told by those around them, the Bayesian approach employs more strategic reasoning where agents update their opinion rationally, based on the behaviour of the agents around them 
+
+\noindent Chapter \ref{chapter:model} will focus on the model, detailing the updating mechanics, and how agents reach consensus through their interaction, and how this consensus eventually reaches the truth, leading to the \emph{Wisdom of Crowds} effect. Alongside the standard DeGroot model some other variations are discussed as well.
+
+\noindent Chapter \ref{chapter:implementation} details the implementation of the network generation, along with the several variations, and how these are used to make the networks reach consensus, and eventually wisdom. Furthermore, it also explains the implementation of the non-cooperative agents who disrupt this very effect.
+
+\noindent Chapter \ref{chapter:results} explains the results obtained by simulating the learning process, and how these various updating rules behave, in networks both with and without non-cooperative agents. Here it becomes clear that, while some variations prevent the network from being led astray by non-cooperative agents, they are not perfect, as instead of consensus among the agents, there is some degree of polarization.
+
+\noindent Finally Chapter \ref{chapter:conclusion} provides an overview of the obtained results and provides some more avenues for future research.
+
+\chapter{Naive Model}
+\label{chapter:model}
+
 \section{Social Learning}
 Social learning is a field of study used in various different disciplines, ranging from Economy to Psychology, concerning the beliefs of agents in groups, and how these beliefs evolve and change over time \parencite{reed2010sociallearning}. Research in this field is dedicated to determining how individuals, and groups as a whole, change their beliefs and actions based on beliefs and actions of those around them. Many models have been proposed to formalize this process \parencite{golub2017learning}, with the DeGroot model being one of the most prominent \parencite{degroot1974concensus}.
 
 \section{DeGroot Model}
 \subsubsection{Agent Interaction}
 \label{interaction:matrix}
-The DeGroot model \parencite{degroot1974concensus} consists of a set of $N=\{1, 2, ..., n\}$ of agents, interacting and exchanging information, at discrete time-steps, and an $n \times n$ \emph{interaction} matrix $\T$ describing the nature of these interactions, representing a \emph{social network}. This interaction matrix describes to whom each agent in the network listens, and to which extent. An element $\Tij > 0$ of the interaction matrix indicates that agent $i$ listens to agent $j$, and the value of this entry determines how much weight agent $i$ places on agents $j$'s opinion: the higher this value, the more important $j$'s opinion is to $i$. It is important to note that $\T$ is a positive matrix, meaning it is not possible for an agent to place a negative weight on another agents opinion, but that they are ever only capable of ignoring other agents, or agreeing with them in some manner. If an agent $i$ listens directly to an agent $j$, $j$ is called agent $i$'s \emph{neighbour}.
+The DeGroot model \parencite{degroot1974concensus} consists of a social network, represented by a (directed) graph with a set of agents and edges connecting those agents, $(N, E)$. If $(i,j)\in E$, it indicates that an edge exists between agents $i$ and $j$, and the weight placed on this edge by $i$ is denoted as $t_{ij}$, which is stored in the \emph{interaction matrix} $\T$, along with the weights on all other edges. In a network with $n$ agents, this results in an $n \times n$ matrix, where an element $\T_{ij}>0$ indicates that agent $i$ listens to agent $j$, or in other words, that there exists an edge from $i$ to $j$, and the value of this entry determines how much weight agent $i$ places on agents $j$'s opinion: the higher this value, the more important $j$'s opinion is to $i$. It is important to note that $\T$ is a positive matrix, meaning it is not possible for an agent to place a negative weight on another agents opinion, but that they are ever only capable of ignoring other agents, or agreeing with them in some manner. If an agent $i$ listens directly to an agent $j$, $j$ is called agent $i$'s \emph{neighbour}.
 
 \newpage
 
@@ -372,7 +395,7 @@ Another variation introduced by \cite{friedkin1990private}, permits each agent t
  
 \newpage
 \chapter{Method}
-
+\label{chapter:implementation}
 In this chapter the details the details of the implementation will be explained, starting with the implementation of the network generation, followed by the different updating mechanics and the method of using these to converge a network.
 \section{Network Generation}
 \label{generation:random}
@@ -403,7 +426,7 @@ Several parameters can be provided to customize the desired network and will be 
 \begin{center}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=.8\textwidth]{ThesisKI/Images/DirectedStandardPerAgent.png}
+        \includegraphics[width=.8\textwidth]{ThesisKI/Images/DirectedStandardPerAgent_cropped.png}
         \caption{Average Degree per Consecutive 100 Agents}
         \label{degree:agent}
     \end{figure}
@@ -590,7 +613,7 @@ The alternative $\varepsilon$-DeGroot mechanics work very similarly to the $\var
 \noindent Furthermore, similar to the $\varepsilon$-DeGroot mechanics, the alternative version, too, results in alternating convergence. Therefore, in order to converge this network using the \texttt{converge\_network} function, the same convergence condition as detail in Section \ref{implementation:epsilon} applies.
 
 \chapter{Results}
-\label{results}
+\label{chapter:results}
 
 The results in the following section are all obtained from networks randomly generated using the same parameters. More specifically, every generated network is a directed network with an increased degree, where each agent is guaranteed to have a self-link. For generating the additional degree the default distribution, as seen in Section \ref{generation:random}, is used.
 
@@ -712,7 +735,7 @@ Finally we look at the non-cooperative networks, with multiple non-cooperative a
 \newpage
 
 \chapter{Conclusion and Future Work}
-
+\label{chapter:conclusion}
 In this chapter we shall provide an overview of the obtained results, examining the behaviour of various updating rules discussed in Sections \ref{updating:variations} and \ref{convergence:implementation}. Furthermore, some future avenues of research will be discussed, in order to provide several options in how to continue this work.
 
 \section{Conclusion}
