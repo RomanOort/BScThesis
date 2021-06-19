@@ -29,6 +29,8 @@
 
 \usepackage[justification=centering]{caption}% or e.g. [format=hang]
 
+
+
 \newtheorem{theorem}{Theorem}
 
 \usepackage[
@@ -286,6 +288,8 @@ In other words, at each update, an agent simply changes its belief to a weighted
     \bm{p}^{(t)} = \T^{t}\bm{p}^{(0)}.
 \end{equation*}
 
+\newpage
+
 \subsubsection{Convergence}
 \label{convergence:general}
 As we are interested in the spread of information through the network, and whether or not the agents in a network will learn the supposed true state of the world, an important notion is the concept of \emph{convergence}. The interaction matrix $\T$ is said to be convergent if:
@@ -315,6 +319,64 @@ exists for all $\bm{p} \in [0, 1]^n$ \parencite{degroot1974concensus}. That is t
 
 \noindent This last eigenvector property not only provides a definition of convergence, but also the actual convergent belief of the network, which is nothing more than a multiplication of the left eigenvector, also called the influence vector, $\bm{s}$ and the belief vector $\bm{p}$. Furthermore, as $\bm{s}$ is a $1 \times n$ row-vector, and $\bm{p}$ an $n \times 1$ column-vector, their multiplication results in a single number, highlighting that there is a single, final belief, held by every agent.
 
+\noindent An example walking through several steps of the updating process in shown below. This shows the updating procedure in more detail, and show how the beliefs of the different agents get closer and closer with each updating step.
+
+\begin{alignat*}{3}
+    \T &= 
+    \begin{pmatrix}
+        0.5 & 0 & 0.5 \\
+        1 & 0 & 0 \\
+        0 & 1 & 0 \\
+    \end{pmatrix}, &&\bm{p}^{(0)} = 
+    \begin{pmatrix}
+        0.2 \\
+        0.15 \\
+        0.75
+    \end{pmatrix} &&\\
+    \bm{p}^{(1)} = \T\bm{p}^{(0)} &= 
+    \begin{pmatrix}
+        0.5 & 0 & 0.5 \\
+        1 & 0 & 0 \\
+        0 & 1 & 0 \\
+    \end{pmatrix}
+    \begin{pmatrix}
+        0.2 \\
+        0.15 \\
+        0.75
+    \end{pmatrix} &&= 
+    \begin{pmatrix}
+        0.2 \cdot 0.5 + 0.75 \cdot 0.5 \\
+        0.2 \cdot 1 \\
+        0.15 \cdot 1
+    \end{pmatrix} &&= 
+    \begin{pmatrix}
+        0.475 \\
+        0.2 \\
+        0.15
+    \end{pmatrix} \\
+    \bm{p}^{(2)} = \T\bm{p}^{(1)} &= 
+    \begin{pmatrix}
+        0.5 & 0 & 0.5 \\
+        1 & 0 & 0 \\
+        0 & 1 & 0 \\
+    \end{pmatrix}
+    \begin{pmatrix}
+        0.475 \\
+        0.2 \\
+        0.15
+    \end{pmatrix} &&= 
+    \begin{pmatrix}
+        0.475 \cdot 0.5 + 0.15 \cdot 0.5 \\
+        0.475 \cdot 1 \\
+        0.2 \cdot 1
+    \end{pmatrix} &&= 
+    \begin{pmatrix}
+        0.3125 \\
+        0.475 \\
+        0.2
+    \end{pmatrix}
+\end{alignat*}
+
 \subsubsection{Wisdom of Crowds}
 \label{wisdom}
 Having established the convergence property for social networks it becomes possible to look towards the notion of wisdom, central in \cite{golub2010naive}. They defined wisdom to mean that a given network not only converges, but converges to the assumed true state of the model, $\mu$, specifically in the context of large societies. That is to say, as the size of the network $n\to\infty$ the convergent belief tends towards the assumed truth $\mu$.
@@ -322,6 +384,8 @@ Having established the convergence property for social networks it becomes possi
 \noindent To encapsulate the idea of large societies, providing insight in the behaviour of these models as the participating number of agents becomes sufficiently large, limiting statements with regard to the number of agents are used. To this end a society is defined as a sequence of networks, indexed by the number of agents in the network, $n$: $\Soc$. This means that the entry $\textbf{T}(n)$ is the interaction matrix of the network in the sequence with $n$ agents, where $\textbf{T}(n)_{ij}$ is used to denote the entry $(i,j)$ in this specific sequence. Said method of indexing is applied to all properties of these networks, e.g.: belief vectors, influence vectors.
 
 \noindent The beliefs of the agents are generated using the same mechanism described in Section \ref{beliefs}, i.e.: independently and identically distributed zero mean error terms added to the assumed truth. The belief of an agent $i$ at a time $t$ is denoted as $\beli{i}{t}(n)$, in a network with $n$ agents. Under the assumption that every network in the given sequence converges, the final belief of an agent $i$, that is to say the belief as $t \to\infty$, as described in Section \ref{convergence:theorem}, is denoted as $\beli{i}{\infty}(n)$.
+
+\newpage
 
 \noindent With these notations we can state the following theorem \parencite{golub2010naive}:
 
@@ -394,6 +458,8 @@ Another variation introduced by \cite{friedkin1990private}, permits each agent t
 \noindent where $b_i \in [0, 1]$ is the private belief of an agent $i$, and $\alpha_i \in [0, 1]$ is the weight that said agent places on their private belief. In essence the updating rule becomes a weighted sum of the new belief, as computed through the standard updating rule, and an agent's private belief.
  
 \newpage
+
+
 \chapter{Method}
 \label{chapter:implementation}
 In this chapter the details the details of the implementation will be explained, starting with the implementation of the network generation, followed by the different updating mechanics and the method of using these to converge a network.
@@ -615,13 +681,15 @@ The alternative $\varepsilon$-DeGroot mechanics work very similarly to the $\var
 \chapter{Results}
 \label{chapter:results}
 
-The results in the following section are all obtained from networks randomly generated using the same parameters. More specifically, every generated network is a directed network with an increased degree, where each agent is guaranteed to have a self-link. For generating the additional degree the default distribution, as seen in Section \ref{generation:random}, is used.
+The results in the following section are all obtained from networks randomly generated using the same parameters, unless specifically mentioned otherwise. More specifically, every generated network is a directed network with an increased degree, where each agent is guaranteed to have a self-link. For generating the additional degree the default distribution, as seen in Section \ref{generation:random}, is used.
 
-\noindent The results are divided into three distinct categories, based on the type of network, the first being a cooperative network. That is to say, a network in which every agent changes their opinion according to the given updating rule. This is meant to function as a control group of sorts, to verify that all updating rules behave as expected, and do indeed converge and show wisdom as the number of agents in the network increases sufficiently.
+\noindent The results are divided into four distinct categories, based on the type of network, the first being a cooperative network. That is to say, a network in which every agent changes their opinion according to the given updating rule. This is meant to function as a control group of sorts, to verify that all updating rules behave as expected, and do indeed converge and show wisdom as the number of agents in the network increases sufficiently.
 
 \noindent The second type of network are networks with a single non-cooperative agent. In such a network the regular DeGroot mechanics already behave wildly different than in a cooperative network, as detailed in Section \ref{theory:noncoop}. Namely, all agents will eventually adopt the opinion of this single non-cooperative agent. In order to verify whether the updating rules from Section \ref{convergence:implementation} do indeed provide more resilience towards non-cooperative agents.
 
-\noindent The third, and final type, of network used are networks with multiple non-cooperative agents. These are all grouped together, as we found, while experimenting, that regular DeGroot mechanics display similar behaviour on networks with multiple non-cooperative agents, regardless of their number. Where all agents adopt the belief of the single non-cooperative agent, should there be only one, they adopt some weighted average of the non-cooperative agents' opinions should there be multiple. However, this weighted average is not constant, but rather changes as the network size varies. The networks used to obtain the results for this category all used \emph{two} non-cooperative agents, to prevent clutter in the graphs, but the trend observed remains the same for any number of non-cooperative agents.
+\noindent The third of network used are networks with multiple non-cooperative agents. These are all grouped together, as we found, while experimenting, that regular DeGroot mechanics display similar behaviour on networks with multiple non-cooperative agents, regardless of their number. Where all agents adopt the belief of the single non-cooperative agent, should there be only one, they adopt some weighted average of the non-cooperative agents' opinions should there be multiple. However, this weighted average is not constant, but rather changes as the network size varies. The networks used to obtain the results for this category all used \emph{two} non-cooperative agents, to prevent clutter in the graphs, but the trend observed remains the same for any number of non-cooperative agents.
+
+\noindent The final type of network is another non-cooperative network with a single non-cooperative network. However, this network type has been generated using different parameters. Namely, where the other three network types are all directed networks, with an increased degree, this network type is undirected, and does not have the increased degree. This is used to show how the obtained results hold for these networks, regardless of their generation parameters.
 
 \noindent For all categories four different figures are shown, all showing a different aspect of the convergence process. One figure shows the convergence of a single network towards the truth, using the different updating rules, as the size of this network increases. This figure is used to show the \emph{Wisdom of Crowds} effect, or lack thereof. 
 
@@ -704,7 +772,7 @@ The second type of network we evaluated were non-cooperative networks with only 
 
 \section{Non-cooperative networks, \\ multiple non-cooperative agents}
 \label{results:noncoop+}
-Finally we look at the non-cooperative networks, with multiple non-cooperative agents, in this case two, as these tend to behave in a similar manner.
+Furthermore, we look at the non-cooperative networks, with multiple non-cooperative agents, in this case two, as these tend to behave in a similar manner.
 
 \noindent First, as seen in Figure \ref{noncoop+:convergence}, the general behaviour is again as expected per \cite{amir2021robust}, where the standard and thresholded DeGroot mechanics lose their \emph{Wisdom of Crowds} effect, as a result of the present non-cooperative agents. However, it is important to note that this convergent belief is no longer constant as the network grows, as it is in networks with only one non-cooperative agent, but rather, the convergent belief changes dependent on the network size. On the other hand, the private belief and $\varepsilon$-DeGroot variants still converge towards the truth, though somewhat slower than in Figures \ref{coop:conv} or \ref{noncoop1:convergence}.
 
@@ -734,13 +802,47 @@ Finally we look at the non-cooperative networks, with multiple non-cooperative a
 
 \newpage
 
+\section{Different Network Types}
+
+Finally, another type of network is examined, with parameters differing from those mentioned at the start of the chapter. Rather than a directed network with an increased degree, Figures \ref{diff:convergence}, \ref{diff:time}, \ref{diff:dist} and \ref{diff:std}, display the results obtained from an undirected network, without increased degree, see Section \ref{generation:random} for more details.
+
+\noindent This displays that the obtained results remain constant among networks generated using various parameters, further graphs reinforcing this claim can be found in Section \ref{results:appendix} of the Appendix.
+
+\noindent However, as already can be seen from Figures \ref{diff:convergence} and \ref{diff:dist}, the updating variations still retain their resilience towards non-cooperative agents, and remain to display the \emph{Wisdom of Crowds} effect.
+
+\noindent On the other hand Figure \ref{diff:std} shows some minimal difference between network types. Where there first was a very slight downward trend of the standard deviation, and therefore the polarization, it appears to remain more constant in this different type of network.
+
+\noindent Finally, by far the most significant difference appears to occur in the time required to converge network, most likely to be caused by the lower degree of the agents. After all, the higher an agents' degree, the more new information it receives, increasing the flow of information and allowing the information to spread faster. The regular and thresholded DeGroot mechanics, which already saw a significant increase in time to converge the network with the addition of a non-cooperative network (see Section \ref{results:noncoop1}), more than double the number of iterations required with the decreased degree. The $\varepsilon$-DeGroot variants and private belief variations, on the other hand,  are, in comparison, unaffected by the decreased degree.
+
+\newpage
+
+\begin{figure}[!htbp]
+    \centering
+    \subfloat[]{\label{diff:convergence}\includegraphics[scale=.45]{ThesisKI/Images/convergence3.png}}
+    
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{diff:time}\includegraphics[scale=.4]{ThesisKI/Images/time3.png}}
+    \end{minipage}%
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{diff:dist}\includegraphics[scale=.4]{ThesisKI/Images/distance3.png}}
+    \end{minipage}\par\medskip
+    \centering
+    \subfloat[]{\label{diff:std}\includegraphics[scale=.45]{ThesisKI/Images/std3.png}}
+    
+    \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent, \\ Alternative Network Parameters}
+\end{figure}
+
+\newpage
+
 \chapter{Conclusion and Future Work}
 \label{chapter:conclusion}
 In this chapter we shall provide an overview of the obtained results, examining the behaviour of various updating rules discussed in Sections \ref{updating:variations} and \ref{convergence:implementation}. Furthermore, some future avenues of research will be discussed, in order to provide several options in how to continue this work.
 
 \section{Conclusion}
 
-The goal of the thesis was to examine the behaviour of social networks where agents update their opinions using the DeGroot mechanics, as discussed in Section \ref{beliefs}, and the emergent \emph{Wisdom of Crowds} effect that arises from this updating rule. More specifically, the goal was to examine the influence of any non-cooperative agents, those who refuse to change their opinion, on this effect, and how variations of the updating rule could provide a more robust updating process, more resilient to non-cooperative agents in the network. Five variations on the DeGroot mechanics, described in more detail in Sections \ref{updating:variations} and \ref{convergence:implementation}, were implemented and compared in three different variations of networks; fully cooperative networks, where every agent changes their opinion; non-cooperative networks, where there is only one single agent who does not change its opinion; and finally non-cooperative networks with multiple non-cooperative agents. 
+The goal of the thesis was to examine the behaviour of social networks where agents update their opinions using the DeGroot mechanics, as discussed in Section \ref{beliefs}, and the emergent \emph{Wisdom of Crowds} effect that arises from this updating rule. More specifically, the goal was to examine the influence of any non-cooperative agents, those who refuse to change their opinion, on this effect, and how variations of the updating rule could provide a more robust updating process, more resilient to non-cooperative agents in the network. Five variations on the DeGroot mechanics, described in more detail in Sections \ref{updating:variations} and \ref{convergence:implementation}, were implemented and compared in three different variations of networks; fully cooperative networks, where every agent changes their opinion; non-cooperative networks, where there is only one single agent who does not change its opinion; non-cooperative networks with multiple non-cooperative agents; and finally a non-cooperative network with a single non-cooperative agent, but different network generation parameters.
 
 \noindent As shown in Section \ref{results:coop}, when the network is fully cooperative the updating rules behave largely similar, all displaying the \emph{Wisdom of Crowds} effect as the network size increases. However, where the regular and thresholded DeGroot mechanics achieve consensus, and every agent holds the same belief at the time of converge, both variations of the $\varepsilon$-DeGroot mechanics and the private belief updating rules do not. Instead these all display some degree of polarization, with each agent holds a different belief from its peers. However, their collective belief, taken to be the mean of all beliefs, still approach the assumed truth of the network, still displaying the \emph{Wisdom of Crowds} effect.
 
@@ -752,7 +854,7 @@ The goal of the thesis was to examine the behaviour of social networks where age
 
 \noindent The other three updating rules, however, behave similarly in the presence of multiple non-cooperative agents as they did in networks with only one, still displaying the \emph{Wisdom of Crowds} effect. Additionally, they still display the same degree of polarization as they did previously, with an increase in non-cooperative agents not having any significant impact on polarization
 
-\noindent All in all, the $\varepsilon$-DeGroot variations and private belief updating mechanics are successful in making social networks more resilient to the presence of non-cooperative agents, where the thresholded DeGroot rule falls short and agents still end up adopting the opinions of the non-cooperative agents. However, these methods are not infallible, as they do not reach consensus, but still display some form of polarization, with all agents holding different beliefs.
+\noindent All in all, the $\varepsilon$-DeGroot variations and private belief updating mechanics are successful in making social networks more resilient to the presence of non-cooperative agents, regardless of the network generation parameters, where the thresholded DeGroot rule falls short and agents still end up adopting the opinions of the non-cooperative agents. However, these methods are not infallible, as they do not reach consensus, but still display some form of polarization.
 
 \noindent While it seems to difficult to directly relate the implemented methods into a real-life counterpart, in the hopes of mitigating the increasing effects of misinformation, it still provides valuable information in the behaviour of groups with regard to non-cooperative agents. Perhaps paving the way for models to expand in this direction, providing more insight in methods that can help combat the spread of misinformation and its harmful effects.
 
@@ -791,59 +893,63 @@ Let $S_n$ be an arbitrary, strongly connected, randomly generated network, obtai
 To grow the network $S_n$ by one agent, the agent $n+1$ is added to the network, with two guaranteed links, one incoming and one outgoing. Let the $i$ and $j$ be the arbitrary agents involved in these links, respectively. By the generation procedure outlined in Section \ref{generation:random}, these agents are guaranteed to be present in $S_n$. However, by our induction hypothesis we now that $S_n$ is strongly connected, therefore there exists a directed path from $i$ and $j$ to any other agent in the network. Therefore, as agent $n+1$ has an incoming link from agent $i$, there exists an incoming path from any agent in the network to $n+1$, and, furthermore, as $n+1$ has an outgoing link to agent $j$, there also exists an outgoing path to any agent in the network. Therefore, as there exists a directed path to any agent in the network from agent $n+1$, $S_{n+1}$ must be strongly connected.\newline
 Therefore, as $S_n$ and $S_{n+1}$ were arbitrary networks, it must be the case that any network generated using this method must be strongly connected.\newline
 
+\section{Results of Alternative Network Types}
+\label{results:appendix}
 \end{document}
 
-\textbf{\noindent One thing to note is that the $\varepsilon$-DeGroot dynamics as described above do not impose a hard, uniform, limit on how much an agent's opinion can change. But rather, this maximum change is determined by the new belief of each agent, and therefore varies from agent to agent. Therefore an alternate approach to the $\varepsilon$-DeGroot dynamics would be to base the new opinion, should the difference between the currently held opinion and the newly computed one exceed the threshold, on the currently held opinion, rather than the newly computed one, changing the updating rule to:
-\begin{equation*}
-    \label{edegroot:alt}
-    \beli{i}{t} =\Bigg\{
-    \begin{matrix*}[l]
-        y, \text{ if } |\beli{i}{t-2} - y| \leq \varepsilon\\
-        x^{\prime}\in\{\beli{i}{t-2}-\varepsilon, \beli{i}{t-2}+\varepsilon\}\text{ s.t. }|y - x^{\prime}|\text{ is minimized, otherwise}
-    \end{matrix*}
-\end{equation*}
-In other words, should the difference between the new opinion and the previous opinion exceed the threshold, $\varepsilon$ is simply added to, or subtracted from, the current opinion, whichever is closest to the belief as computed through the standard updating rule. This imposes a hard limit on how much an agents opinion can change in a single update, namely $\varepsilon$. This hard limit is universal for all agents in the network, instead of varying across different agents as is the case in the regular $\varepsilon$-DeGroot rule.}
 
 
-As shown in section [REF]\todo{ref naar updating rule section} $\bm{p}^{(t)}$ can be computed two different ways. The first is the iterative method described in equation [REF] \todo{ref naar iterative updating method}, simply multiplying the belief vector at the previous time-step, $\bm{p}^{(t-1)}$, with the interaction matrix, $\T$, and repeating this process $t$ times. In order to converge a network, using the standard DeGroot dynamics, this process is repeated, until the difference between $\bm{p}^{(t)}$ and $\bm{p}^{(t-1)}$ is zero, or near enough. In other words, the updating step is applied until the beliefs no longer change from one step to another.
+% \textbf{\noindent One thing to note is that the $\varepsilon$-DeGroot dynamics as described above do not impose a hard, uniform, limit on how much an agent's opinion can change. But rather, this maximum change is determined by the new belief of each agent, and therefore varies from agent to agent. Therefore an alternate approach to the $\varepsilon$-DeGroot dynamics would be to base the new opinion, should the difference between the currently held opinion and the newly computed one exceed the threshold, on the currently held opinion, rather than the newly computed one, changing the updating rule to:
+% \begin{equation*}
+%     \label{edegroot:alt}
+%     \beli{i}{t} =\Bigg\{
+%     \begin{matrix*}[l]
+%         y, \text{ if } |\beli{i}{t-2} - y| \leq \varepsilon\\
+%         x^{\prime}\in\{\beli{i}{t-2}-\varepsilon, \beli{i}{t-2}+\varepsilon\}\text{ s.t. }|y - x^{\prime}|\text{ is minimized, otherwise}
+%     \end{matrix*}
+% \end{equation*}
+% In other words, should the difference between the new opinion and the previous opinion exceed the threshold, $\varepsilon$ is simply added to, or subtracted from, the current opinion, whichever is closest to the belief as computed through the standard updating rule. This imposes a hard limit on how much an agents opinion can change in a single update, namely $\varepsilon$. This hard limit is universal for all agents in the network, instead of varying across different agents as is the case in the regular $\varepsilon$-DeGroot rule.}
 
-The second is to use the method described in equation [REF] \todo{ref naar verkorte updating rule}, which states that to compute the belief vector for a specific $t$, the initial belief vector can be multiplied with the interaction matrix, raised to the power of that $t$. However, upon examination of the computational time, as shown in Figure \ref{update:time}, [REF] \todo{ref naar exponentiation update rule}, is significantly slower, for both dense and sparse matrices.
-\todo{fontsize}
-\begin{figure}[!htbp]%
-    \centering
-    \subfloat[\centering Dense Matrix]{{\includegraphics[width=.45\textwidth]{ThesisKI/Images/UpdatingTimeDense.png} }}%
-    \qquad
-    \subfloat[\centering Sparse Matrix]{{\includegraphics[width=.45\textwidth]{ThesisKI/Images/UpdatingTimeSparse.png} }}%
-    \caption{Updating time}%
-    \label{update:time}%
-\end{figure}
 
-Therefore the iterative method was implemented, in order to significantly speed the updating process. Furthermore, this also allows for saving all intermediate belief vectors, providing insight in the rate of convergence of the network.
+% As shown in section [REF]\todo{ref naar updating rule section} $\bm{p}^{(t)}$ can be computed two different ways. The first is the iterative method described in equation [REF] \todo{ref naar iterative updating method}, simply multiplying the belief vector at the previous time-step, $\bm{p}^{(t-1)}$, with the interaction matrix, $\T$, and repeating this process $t$ times. In order to converge a network, using the standard DeGroot dynamics, this process is repeated, until the difference between $\bm{p}^{(t)}$ and $\bm{p}^{(t-1)}$ is zero, or near enough. In other words, the updating step is applied until the beliefs no longer change from one step to another.
 
-However, as shown by \parencite{degroot1974concensus}, the convergent belief can also be computed directly, using the eigenvector of the interaction matrix, $\T$, corresponding to $\lambda=1$. Therefore another function was made for those cases where only the convergent belief is of interest. This function gives only the convergent opinion of the network.
+% The second is to use the method described in equation [REF] \todo{ref naar verkorte updating rule}, which states that to compute the belief vector for a specific $t$, the initial belief vector can be multiplied with the interaction matrix, raised to the power of that $t$. However, upon examination of the computational time, as shown in Figure \ref{update:time}, [REF] \todo{ref naar exponentiation update rule}, is significantly slower, for both dense and sparse matrices.
+% \todo{fontsize}
+% \begin{figure}[!htbp]%
+%     \centering
+%     \subfloat[\centering Dense Matrix]{{\includegraphics[width=.45\textwidth]{ThesisKI/Images/UpdatingTimeDense.png} }}%
+%     \qquad
+%     \subfloat[\centering Sparse Matrix]{{\includegraphics[width=.45\textwidth]{ThesisKI/Images/UpdatingTimeSparse.png} }}%
+%     \caption{Updating time}%
+%     \label{update:time}%
+% \end{figure}
 
-\section{Non-cooperative networks, $n=1$}
+% Therefore the iterative method was implemented, in order to significantly speed the updating process. Furthermore, this also allows for saving all intermediate belief vectors, providing insight in the rate of convergence of the network.
 
-Where the different updating rules behaved in a similar fashion as the regular DeGroot updating mechanics in a fully cooperative network, significant differences start to appear when applied to a network with so much as one non-cooperative agent, as demonstrated in Figure \ref{noncoop1:compare}. 
+% However, as shown by \parencite{degroot1974concensus}, the convergent belief can also be computed directly, using the eigenvector of the interaction matrix, $\T$, corresponding to $\lambda=1$. Therefore another function was made for those cases where only the convergent belief is of interest. This function gives only the convergent opinion of the network.
 
-\noindent First of all, as expected, under regular DeGroot dynamics the convergent opinion becomes that of the non-cooperative agent, and the same applies to the thresholded DeGroot mechanics. Furthermore, again as expected, this belief is uniform, held by every agent in the network, However, the other three updating mechanics exhibit vastly different behaviour. Instead of converging towards the opinion of the non-cooperative agent, the network still converges towards the truth. However, once again, this is not a uniform convergence, as there still is some deviation in the convergent belief vector, though this appears to decline ever so slightly as the network size increases. Furthermore, the standard deviation for the private belief updating rule is somewhat higher when compared to a fully cooperative network Figure \ref{coop:compare}. Also, just as in a cooperative network, the standard deviation of the private belief updating rule is significantly less than that of the $\varepsilon$-DeGroot variations.
+% \section{Non-cooperative networks, $n=1$}
 
-\noindent Finally, the updating time for both the regular and the thresholded DeGroot mechanics behave nearly identical, and both display a significant increase in convergence time, whereas the other three updating rules do not appear to show significantly slower convergence. Furthermore, where it decreased as the network grew in a fully cooperative network, the convergence time only increases as the network grows in the presence of a non-cooperative agent. This increase in convergence time can be explained by the presence of the single non-cooperative agent, whose influence has to spread throughout the entire network, taking more and more time to reach every agent as the network size increases. Furthermore, this appears to be a non-factor for the other updating rules, where the non-cooperative agent is not nearly as formative, or even formative at all, for the convergent opinion, making it so that it does not significantly impact the convergence time as a result.
+% Where the different updating rules behaved in a similar fashion as the regular DeGroot updating mechanics in a fully cooperative network, significant differences start to appear when applied to a network with so much as one non-cooperative agent, as demonstrated in Figure \ref{noncoop1:compare}. 
 
-\section{Non-cooperative networks, $n > 1$}
+% \noindent First of all, as expected, under regular DeGroot dynamics the convergent opinion becomes that of the non-cooperative agent, and the same applies to the thresholded DeGroot mechanics. Furthermore, again as expected, this belief is uniform, held by every agent in the network, However, the other three updating mechanics exhibit vastly different behaviour. Instead of converging towards the opinion of the non-cooperative agent, the network still converges towards the truth. However, once again, this is not a uniform convergence, as there still is some deviation in the convergent belief vector, though this appears to decline ever so slightly as the network size increases. Furthermore, the standard deviation for the private belief updating rule is somewhat higher when compared to a fully cooperative network Figure \ref{coop:compare}. Also, just as in a cooperative network, the standard deviation of the private belief updating rule is significantly less than that of the $\varepsilon$-DeGroot variations.
 
-Finally, in networks with multiple non-cooperative agents there is once again a significant difference in the behaviour of the various updating rules, as seen in Figure \ref{noncoop+:compare}. Once again, both the regular and thresholded DeGroot mechanics converge towards the opinions of the non-cooperative agents, tending towards some, weighted, average between the opinions of those agents, regardless of the assumed truth. However, the effect of these non-cooperative agents is negligible to the convergent belief of the network when using the other three updating rules, all of which still converge towards the assumed truth of the network. 
+% \noindent Finally, the updating time for both the regular and the thresholded DeGroot mechanics behave nearly identical, and both display a significant increase in convergence time, whereas the other three updating rules do not appear to show significantly slower convergence. Furthermore, where it decreased as the network grew in a fully cooperative network, the convergence time only increases as the network grows in the presence of a non-cooperative agent. This increase in convergence time can be explained by the presence of the single non-cooperative agent, whose influence has to spread throughout the entire network, taking more and more time to reach every agent as the network size increases. Furthermore, this appears to be a non-factor for the other updating rules, where the non-cooperative agent is not nearly as formative, or even formative at all, for the convergent opinion, making it so that it does not significantly impact the convergence time as a result.
 
-\noindent However, the regular and thresholded DeGroot mechanics no longer display uniform convergence in the presence of multiple non-cooperative agents, although the standard deviation of the convergent belief vector does decrease quickly as the network size increases. On the other hand, the standard deviation of the convergent belief vector for the other updating rules does not appear to change drastically when additional non-cooperative agents are added to the network
+% \section{Non-cooperative networks, $n > 1$}
 
-\noindent Finally, while still significantly higher than in a fully cooperative network, the convergence time is shorter than in the presence of only one non-cooperative agent, for both the regular and thresholded DeGroot mechanics. As the number of non-cooperative in the network increases so too does their combined influence, reducing the time it takes for them to influence all cooperative agents. All the other three updating rules are still unaffected in their convergence time, as the influence of the non-cooperative agents on their updating process is very limited.
+% Finally, in networks with multiple non-cooperative agents there is once again a significant difference in the behaviour of the various updating rules, as seen in Figure \ref{noncoop+:compare}. Once again, both the regular and thresholded DeGroot mechanics converge towards the opinions of the non-cooperative agents, tending towards some, weighted, average between the opinions of those agents, regardless of the assumed truth. However, the effect of these non-cooperative agents is negligible to the convergent belief of the network when using the other three updating rules, all of which still converge towards the assumed truth of the network. 
 
-\subsubsection{Prominent Families}
+% \noindent However, the regular and thresholded DeGroot mechanics no longer display uniform convergence in the presence of multiple non-cooperative agents, although the standard deviation of the convergent belief vector does decrease quickly as the network size increases. On the other hand, the standard deviation of the convergent belief vector for the other updating rules does not appear to change drastically when additional non-cooperative agents are added to the network
 
-One such obstacle is a natural extension of the vanishing influence condition mentioned previously. Just as how a single agent cannot hold too much sway over the network, the same holds for \emph{groups} of agents in a network. The influence of a group $B$ on another group $C$ is simply defined as the sum of all weight placed on all agents $i \in B$ by all agents $j \in C$. 
+% \noindent Finally, while still significantly higher than in a fully cooperative network, the convergence time is shorter than in the presence of only one non-cooperative agent, for both the regular and thresholded DeGroot mechanics. As the number of non-cooperative in the network increases so too does their combined influence, reducing the time it takes for them to influence all cooperative agents. All the other three updating rules are still unaffected in their convergence time, as the influence of the non-cooperative agents on their updating process is very limited.
 
-\noindent Another way to measure the influence of a group is using that group's \emph{t-step prominence}, which looks at the group's influence in relation to the entirety of the network rather than in relation to a single other group. More specifically, the \emph{t-step prominence} of a group $B$ at a given time $t$, is simply the lowest weight placed by any agent $i \notin B$ on any agent $j \in B$ \parencite{golub2010naive}.
+% \subsubsection{Prominent Families}
 
-\noindent However, as we are interested in sequences of networks, we need to extend the definition of groups into sequences as well. Therefore we define a family to be a sequence of groups $(B_n)$ in the network, such that each $B_n \subset \{1, ..., n\}$.
+% One such obstacle is a natural extension of the vanishing influence condition mentioned previously. Just as how a single agent cannot hold too much sway over the network, the same holds for \emph{groups} of agents in a network. The influence of a group $B$ on another group $C$ is simply defined as the sum of all weight placed on all agents $i \in B$ by all agents $j \in C$. 
 
-\noindent Now, a family is capable of preventing the wisdom of a network. If a finite family is exists that, for every network in the sequence, for some $t$, has a t-step prominence larger than some constant $\alpha$, this family will prevent the network from being wise \parencite{golub2010naive}.
+% \noindent Another way to measure the influence of a group is using that group's \emph{t-step prominence}, which looks at the group's influence in relation to the entirety of the network rather than in relation to a single other group. More specifically, the \emph{t-step prominence} of a group $B$ at a given time $t$, is simply the lowest weight placed by any agent $i \notin B$ on any agent $j \in B$ \parencite{golub2010naive}.
+
+% \noindent However, as we are interested in sequences of networks, we need to extend the definition of groups into sequences as well. Therefore we define a family to be a sequence of groups $(B_n)$ in the network, such that each $B_n \subset \{1, ..., n\}$.
+
+% \noindent Now, a family is capable of preventing the wisdom of a network. If a finite family is exists that, for every network in the sequence, for some $t$, has a t-step prominence larger than some constant $\alpha$, this family will prevent the network from being wise \parencite{golub2010naive}.
