@@ -971,25 +971,29 @@ In this section we first show the results for the remaining two network types, t
 
 Finally, we also show the results for the four different updating rules for different parameter values, showcasing the differences in behaviour that occur as a consequence.
 
-Changing the parameter values has no overall large consequence for the general behaviour of the updating rules. That is to say, those rules that provided more resilience in the face of non-cooperative agents, generally remain to do so, regardless of parameter value. The largest differences tend to occur in the degree of polarization, which tends to vary between parameter values, which can be seen especially clearly for the private belief updating rule, where a higher weight on the private belief leads to a larger degree of polarization. This is not entirely unexpected, as the private beliefs are the initial beliefs of the agents, at which point the beliefs lie the furthest apart.
+Changing the parameter values has no overall large consequence for the general behaviour of the updating rules. That is to say, those rules that provided more resilience in the face of non-cooperative agents, generally remain to do so, regardless of parameter value. 
+
+The largest differences tend to occur in the degree of polarization, which tends to vary between parameter values, which can be seen especially clearly for the private belief updating rule, where a higher weight on the private belief leads to a larger degree of polarization. This is not entirely unexpected, as the private beliefs are the initial beliefs of the agents, at which point the beliefs lie the furthest apart.
+
+Though this difference is most clearly seen in the private belief updating rule it is still present in the $\varepsilon$-DeGroot variants. Though this difference gets smaller as the values for $\varepsilon$ get larger.
 
 \newpage
 
 \subsection{Directed Network, Unincreased Degree}
 \begin{figure}[!htbp]
     \centering
-    \subfloat[]{\label{noncoop+:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_dirnoninc.png}}
+    \subfloat[]{\label{dirun:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_dirnoninc.png}}
     
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{noncoop+:time}\includegraphics[scale=.35]{ThesisKI/Images/time_dirnoninc.png}}
+    \subfloat[]{\label{dirun:time}\includegraphics[scale=.35]{ThesisKI/Images/time_dirnoninc.png}}
     \end{minipage}%
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{noncoop+:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_dirnoninc.png}}
+    \subfloat[]{\label{dirun:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_dirnoninc.png}}
     \end{minipage}\par\medskip
     \centering
-    \subfloat[]{\label{noncoop+:std}\includegraphics[scale=.35]{ThesisKI/Images/std_dirnoninc.png}}
+    \subfloat[]{\label{dirun:std}\includegraphics[scale=.35]{ThesisKI/Images/std_dirnoninc.png}}
     
     \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent, \\ Directed, Unincreased Degree}
 \end{figure}
@@ -1000,18 +1004,18 @@ Changing the parameter values has no overall large consequence for the general b
 
 \begin{figure}[!htbp]
     \centering
-    \subfloat[]{\label{noncoop+:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_udirnoninc.png}}
+    \subfloat[]{\label{unin:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_udirnoninc.png}}
     
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{noncoop+:time}\includegraphics[scale=.35]{ThesisKI/Images/time_udirnoninc.png}}
+    \subfloat[]{\label{unin:time}\includegraphics[scale=.35]{ThesisKI/Images/time_udirnoninc.png}}
     \end{minipage}%
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{noncoop+:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_udirnoninc.png}}
+    \subfloat[]{\label{unin:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_udirnoninc.png}}
     \end{minipage}\par\medskip
     \centering
-    \subfloat[]{\label{noncoop+:std}\includegraphics[scale=.35]{ThesisKI/Images/std_udirnoninc.png}}
+    \subfloat[]{\label{unin:std}\includegraphics[scale=.35]{ThesisKI/Images/std_udirnoninc.png}}
     
     \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent, \\ Undirected, Increased Degree}
 \end{figure}
@@ -1021,18 +1025,18 @@ Changing the parameter values has no overall large consequence for the general b
 \subsection{Undirected Network Unincreased Degree}
 \begin{figure}[!htbp]
     \centering
-    \subfloat[]{\label{diff:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence3.png}}
+    \subfloat[]{\label{unun:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence3.png}}
     
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{diff:time}\includegraphics[scale=.35]{ThesisKI/Images/time3.png}}
+    \subfloat[]{\label{unun:time}\includegraphics[scale=.35]{ThesisKI/Images/time3.png}}
     \end{minipage}%
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{diff:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance3.png}}
+    \subfloat[]{\label{unun:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance3.png}}
     \end{minipage}\par\medskip
     \centering
-    \subfloat[]{\label{diff:std}\includegraphics[scale=.35]{ThesisKI/Images/std3.png}}
+    \subfloat[]{\label{unun:std}\includegraphics[scale=.35]{ThesisKI/Images/std3.png}}
     
     \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent, \\ Undirected, Unincreased Degree}
 \end{figure}
@@ -1042,41 +1046,41 @@ Changing the parameter values has no overall large consequence for the general b
 \subsection{$\varepsilon$-DeGroot Parameter Variation}
 \begin{figure}[!htbp]
     \centering
-    \subfloat[]{\label{diff:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_e.png}}
+    \subfloat[]{\label{e:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_e.png}}
     
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{diff:time}\includegraphics[scale=.35]{ThesisKI/Images/time_e.png}}
+    \subfloat[]{\label{e:time}\includegraphics[scale=.35]{ThesisKI/Images/time_e.png}}
     \end{minipage}%
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{diff:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_e.png}}
+    \subfloat[]{\label{e:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_e.png}}
     \end{minipage}\par\medskip
     \centering
-    \subfloat[]{\label{diff:std}\includegraphics[scale=.35]{ThesisKI/Images/std_e.png}}
+    \subfloat[]{\label{e:std}\includegraphics[scale=.35]{ThesisKI/Images/std_e.png}}
     
-    \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent}
+    \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent, \\ $\varepsilon$-DeGroot Parameter Values}
 \end{figure}
 
 \newpage
 
-\subsection{$\varepsilon$-DeGroot Parameter Variation}
+\subsection{$\varepsilon$-DeGroot, alternative, Parameter Variation}
 \begin{figure}[!htbp]
     \centering
-    \subfloat[]{\label{diff:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_e.png}}
+    \subfloat[]{\label{alt:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_alt.png}}
     
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{diff:time}\includegraphics[scale=.35]{ThesisKI/Images/time_e.png}}
+    \subfloat[]{\label{alt:time}\includegraphics[scale=.35]{ThesisKI/Images/time_alt.png}}
     \end{minipage}%
     \begin{minipage}{.45\linewidth}
     \centering
-    \subfloat[]{\label{diff:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_e.png}}
+    \subfloat[]{\label{alt:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_alt.png}}
     \end{minipage}\par\medskip
     \centering
-    \subfloat[]{\label{diff:std}\includegraphics[scale=.35]{ThesisKI/Images/std_e.png}}
+    \subfloat[]{\label{alt:std}\includegraphics[scale=.35]{ThesisKI/Images/std_alt.png}}
     
-    \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent}
+    \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent, \\ $\varepsilon$-DeGroot Alternative Parameter Values}
 \end{figure}
 \end{document}
 
