@@ -767,7 +767,7 @@ The third type of network are those containing multiple non-cooperative agents. 
 
 Whereas in the case of a single non-cooperative agent, all agents end up adopting this one non-cooperative agents' belief, in the case of multiple non-cooperative agent, every agent adopts some weighted average of the non-cooperative agents' opinions, which can differ between individual agents. Furthermore, this weighted average is not constant, but rather, it changes as the network varies in size. The networks used to obtain the results for this category all used \emph{two} non-cooperative agents, to prevent clutter in the graphs, but the trend observed remains the same for any number of non-cooperative agents.
 
-Finally we also describe the results obtained by applying the update rules to networks generated under different parameters, and how the behaviour of these updating rules changes dependent on the parameter values. The results are concisely described in Section REF, and the corresponding figures can be found in Section REF of the Appendix.
+Finally we also describe the results obtained by applying the update rules to networks generated under different parameters, and how the behaviour of these updating rules changes dependent on the parameter values. The results are concisely described in Section \ref{results:additional}, and the corresponding figures can be found in Section \ref{results:appendix} of the Appendix.
 
 For all categories four different figures are shown, all showing a different aspect of the convergence process. One figure shows the convergence of a single network towards the truth, using the different updating rules, as the size of this network increases. This figure is used to show the \emph{Wisdom of Crowds} effect, or lack thereof. 
 
@@ -883,7 +883,7 @@ On the other hand, the private belief and $\varepsilon$-DeGroot variants still s
 \newpage
 
 \section{Generation and Updating Parameters}
-
+\label{results:additional}
 \paragraph{Generation} The networks in the preceding sections were all directed networks, with increased degree, as described in Section \ref{generation:random}.
 
 The same figures as generated for these types of network were also generated for the remaining three network types: directed, with unincreased degree; undirected networks with increased degree; and undirected networks with unincreased degree.
@@ -975,7 +975,6 @@ Changing the parameter values has no overall large consequence for the general b
 
 \newpage
 
-
 \subsection{Directed Network, Unincreased Degree}
 \begin{figure}[!htbp]
     \centering
@@ -1039,6 +1038,46 @@ Changing the parameter values has no overall large consequence for the general b
 \end{figure}
 
 \newpage
+
+\subsection{$\varepsilon$-DeGroot Parameter Variation}
+\begin{figure}[!htbp]
+    \centering
+    \subfloat[]{\label{diff:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_e.png}}
+    
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{diff:time}\includegraphics[scale=.35]{ThesisKI/Images/time_e.png}}
+    \end{minipage}%
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{diff:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_e.png}}
+    \end{minipage}\par\medskip
+    \centering
+    \subfloat[]{\label{diff:std}\includegraphics[scale=.35]{ThesisKI/Images/std_e.png}}
+    
+    \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent}
+\end{figure}
+
+\newpage
+
+\subsection{$\varepsilon$-DeGroot Parameter Variation}
+\begin{figure}[!htbp]
+    \centering
+    \subfloat[]{\label{diff:convergence}\includegraphics[scale=.35]{ThesisKI/Images/convergence_e.png}}
+    
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{diff:time}\includegraphics[scale=.35]{ThesisKI/Images/time_e.png}}
+    \end{minipage}%
+    \begin{minipage}{.45\linewidth}
+    \centering
+    \subfloat[]{\label{diff:dist}\includegraphics[scale=.35]{ThesisKI/Images/distance_e.png}}
+    \end{minipage}\par\medskip
+    \centering
+    \subfloat[]{\label{diff:std}\includegraphics[scale=.35]{ThesisKI/Images/std_e.png}}
+    
+    \caption{Convergence Behaviour, \\ Non-cooperative Network, \\ Single Non-cooperative Agent}
+\end{figure}
 \end{document}
 
 
